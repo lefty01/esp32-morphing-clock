@@ -93,7 +93,7 @@ void setup(){
   logStatusMessage("WiFi connected!");
 
   logStatusMessage("NTP time...");
-  configTime(TIMEZONE_DELTA_SEC, TIMEZONE_DST_SEC, "ro.pool.ntp.org");
+  configTime(TIMEZONE_DELTA_SEC, TIMEZONE_DST_SEC, "europe.pool.ntp.org");
   lastNTPUpdate = millis();
   logStatusMessage("NTP done!");
 
@@ -137,7 +137,7 @@ void loop() {
   // Periodically refresh NTP time
   if (millis() - lastNTPUpdate > 1000*NTP_REFRESH_INTERVAL_SEC) {
     logStatusMessage("NTP Refresh");
-    configTime(TIMEZONE_DELTA_SEC, TIMEZONE_DST_SEC, "ro.pool.ntp.org");
+    configTime(TIMEZONE_DELTA_SEC, TIMEZONE_DST_SEC, "europe.pool.ntp.org");
     lastNTPUpdate = millis();
   }
 
