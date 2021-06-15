@@ -19,7 +19,7 @@
 #define SENSOR_DEAD_INTERVAL_SEC 600
 
 //Button pin
-#define BUTTON1_PIN 32
+#define BUTTON1_PIN 0
 
 //Buzzer pin
 #define BUZZER_PIN 2
@@ -28,25 +28,25 @@
 
 // Screen positioning settings
 // Panel size
-#define PANEL_WIDTH 128
+#define PANEL_WIDTH  64
 #define PANEL_HEIGHT 64
 
 // Clock
-#define CLOCK_X 3
-#define CLOCK_Y 21
-#define CLOCK_SEGMENT_HEIGHT 8
-#define CLOCK_SEGMENT_WIDTH 8
-#define CLOCK_SEGMENT_SPACING 5
-#define CLOCK_WIDTH 6*(CLOCK_SEGMENT_WIDTH+CLOCK_SEGMENT_SPACING)+4
+#define CLOCK_X 0
+#define CLOCK_Y 24
+#define CLOCK_SEGMENT_HEIGHT 6
+#define CLOCK_SEGMENT_WIDTH  6
+#define CLOCK_SEGMENT_SPACING 4
+#define CLOCK_WIDTH  6*(CLOCK_SEGMENT_WIDTH+CLOCK_SEGMENT_SPACING)+4
 #define CLOCK_HEIGHT 2*CLOCK_SEGMENT_HEIGHT+3
 //color565 == ((red & 0xF8) << 8) | ((green & 0xFC) << 3) | (blue >> 3)
 #define CLOCK_DIGIT_COLOR  ((0x00 & 0xF8) << 8) | ((0xFF & 0xFC) << 3) | (0xFF >> 3)
 //Delay in ms for clock animation - should be below 30ms for a segment size of 8
 #define CLOCK_ANIMATION_DELAY_MSEC 20
 
-// Day of week
-#define DOW_X 90
-#define DOW_Y 21
+// Day of week FIXME position
+#define DOW_X 0 //PANEL_WIDTH - 10 // FIXME: width for panels other than 128
+#define DOW_Y 0 //21
 #define DOW_COLOR ((0x00 & 0xF8) << 8) | ((0x40 & 0xFC) << 3) | (0xFF >> 3)
 // Date
 #define DATE_X DOW_X
@@ -60,15 +60,15 @@
 // Weather sensor data
 #define SENSOR_DATA_X 0
 #define SENSOR_DATA_Y 0
-#define SENSOR_DATA_WIDTH 128
-#define SENSOR_DATA_HEIGHT 8
+#define SENSOR_DATA_WIDTH PANEL_WIDTH // FIXME
+#define SENSOR_DATA_HEIGHT 6
 #define SENSOR_DATA_COLOR ((0x00 & 0xF8) << 8) | ((0x8F & 0xFC) << 3) | (0x00 >> 3)
 #define SENSOR_ERROR_DATA_COLOR ((0xFF & 0xF8) << 8) | ((0x00 & 0xFC) << 3) | (0x00 >> 3)
 
 // Light sensor data
 #define LIGHT_DATA_X 0
 #define LIGHT_DATA_Y 9
-#define LIGHT_DATA_WIDTH 72
+#define LIGHT_DATA_WIDTH PANEL_WIDTH // FIXME
 #define LIGHT_DATA_HEIGHT 8
 #define LIGHT_DATA_COLOR ((0x00 & 0xF8) << 8) | ((0xFF & 0xFC) << 3) | (0x00 >> 3)
 

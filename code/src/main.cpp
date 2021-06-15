@@ -156,17 +156,17 @@ void loop() {
   // Do we have new sensor data?
   if (newSensorData) {
     //logStatusMessage("Sensor data in");
-    displaySensorData();
+    //displaySensorData(); FIXME position
   }
 
   // Is the sensor data too old?
   if (millis() - lastSensorRead > 1000*SENSOR_DEAD_INTERVAL_SEC) {
     sensorDead = true;
-    displaySensorData();
+    //displaySensorData();FIXME position
   }
 
   float tslData = tslGetLux();
-  displayLightData(tslData);
+  //displayLightData(tslData); FIXME position
 
   heartBeat = !heartBeat;
   drawHeartBeat();
