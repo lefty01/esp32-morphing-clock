@@ -23,8 +23,8 @@ uint16_t colorWheel(uint8_t pos) {
 void display_init() {
   HUB75_I2S_CFG::i2s_pins _pins={R1_PIN, G1_PIN, B1_PIN, R2_PIN, G2_PIN, B2_PIN, A_PIN, B_PIN, C_PIN, D_PIN, E_PIN, LAT_PIN, OE_PIN, CLK_PIN};
   HUB75_I2S_CFG mxconfig(
-	128, // Module width
-	64, // Module height
+	PANEL_WIDTH, // Module width
+	PANEL_HEIGHT, // Module height
 	1, // chain length
 	_pins // pin mapping
   );
@@ -40,7 +40,7 @@ void display_init() {
 void logStatusMessage(const char *message) {
   Serial.println(message);
   // Clear the last line first!
-  dma_display->fillRect(0, 56, 128, 8, 0);
+  dma_display->fillRect(0, 56, PANEL_WIDTH, 8, 0);
 
   dma_display->setTextSize(1);     // size 1 == 8 pixels high
   dma_display->setTextWrap(false); // Don't wrap at end of line - will do ourselves
@@ -58,7 +58,7 @@ void logStatusMessage(const char *message) {
 void logStatusMessage(String message) {
   Serial.println(message);
   // Clear the last line first!
-  dma_display->fillRect(0, 56, 128, 8, 0);
+  dma_display->fillRect(0, 56, PANEL_WIDTH, 8, 0);
 
   dma_display->setTextSize(1);     // size 1 == 8 pixels high
   dma_display->setTextWrap(false); // Don't wrap at end of line - will do ourselves
@@ -73,7 +73,7 @@ void logStatusMessage(String message) {
 }
 
 void clearStatusMessage() {
-   dma_display->fillRect(0, 56, 128, 8, 0); 
+   dma_display->fillRect(0, 56, PANEL_WIDTH, 8, 0);
    logMessageActive = false;
 }
 
@@ -83,8 +83,8 @@ void displaySensorData() {
     dma_display->setTextSize(1);     // size 1 == 8 pixels high
     dma_display->setTextWrap(false); // Don't wrap at end of line - will do ourselves
     dma_display->setTextColor(SENSOR_ERROR_DATA_COLOR);
-    
-    dma_display->setCursor(SENSOR_DATA_X, SENSOR_DATA_Y);   
+
+    dma_display->setCursor(SENSOR_DATA_X, SENSOR_DATA_Y);
     dma_display->print("No sensor data!");
   }
 
@@ -95,27 +95,27 @@ void displaySensorData() {
     dma_display->setTextColor(SENSOR_DATA_COLOR);
 //    dma_display->setFont(&FreeSerifBold12pt7b);
 
-    dma_display->setCursor(SENSOR_DATA_X, SENSOR_DATA_Y);   
+    dma_display->setCursor(SENSOR_DATA_X, SENSOR_DATA_Y);
     dma_display->printf("%4.1f C           %3d%%", sensorTemp, sensorHumi);
-    
+
     // Draw the degree symbol manually
     dma_display->fillRect(SENSOR_DATA_X + 25, SENSOR_DATA_Y, 2, 2, SENSOR_DATA_COLOR);
-    
+
     newSensorData = false;
   }
 }
 
 void displayLightData(float luxValue) {
   dma_display->fillRect(LIGHT_DATA_X, LIGHT_DATA_Y, LIGHT_DATA_WIDTH, LIGHT_DATA_HEIGHT, 0);
-  
+
   dma_display->setTextSize(1);     // size 1 == 8 pixels high
   dma_display->setTextWrap(false); // Don't wrap at end of line - will do ourselves
   dma_display->setTextColor(SENSOR_DATA_COLOR);
   //    dma_display->setFont(&FreeSerifBold12pt7b);
 
-  dma_display->setCursor(LIGHT_DATA_X, LIGHT_DATA_Y);   
+  dma_display->setCursor(LIGHT_DATA_X, LIGHT_DATA_Y);
   dma_display->printf("%4.1f lx", luxValue);
-    
+
 
 }
 
