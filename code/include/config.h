@@ -10,7 +10,7 @@
 // Timezone difference from GMT, expressed in seconds
 #define TIMEZONE_DELTA_SEC 7200
 // DST delta to apply
-#define TIMEZONE_DST_SEC 3600
+#define TIMEZONE_DST_SEC 0 //3600 FIXME does DST work?! doesnt look like
 
 // How long are informational messages kept on screen
 #define LOG_MESSAGE_PERSISTENCE_MSEC 30000
@@ -78,8 +78,8 @@
 #define BITMAP_X 0
 #define BITMAP_Y 44
 
-#define HEARTBEAT_X 120
-#define HEARTBEAT_Y 21
+#define HEARTBEAT_X PANEL_WIDTH - 8
+#define HEARTBEAT_Y 0
 
 
 
