@@ -77,6 +77,10 @@ void clearStatusMessage() {
    logMessageActive = false;
 }
 
+void clearForecast() {
+   dma_display->fillRect(0, BITMAP_Y, PANEL_WIDTH, 8, 0);
+}
+
 void displaySensorData() {
   if (sensorDead) {
     dma_display->fillRect(SENSOR_DATA_X, SENSOR_DATA_Y, SENSOR_DATA_WIDTH, SENSOR_DATA_HEIGHT, 0);

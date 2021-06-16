@@ -136,6 +136,17 @@ uint32_t static snow_8x8[] = {
   0x8080FF, 0x000000, 0x8080FF, 0x000000, 0x000000, 0x8080FF, 0x000000, 0x8080FF,
 };
 
+uint32_t static fog_8x8[] = { // FIXME
+  0x000000, 0x0000FF, 0x000000, 0x0000FF, 0x000000, 0x0000FF, 0x000000, 0x0000FF,
+  0x0000FF, 0x000000, 0x0000FF, 0x000000, 0x0000FF, 0x000000, 0x0000FF, 0x000000,
+  0x000000, 0x0000FF, 0x000000, 0x0000FF, 0x000000, 0x0000FF, 0x000000, 0x0000FF,
+  0x0000FF, 0x000000, 0x0000FF, 0x000000, 0x0000FF, 0x000000, 0x0000FF, 0x000000,
+  0x000000, 0x0000FF, 0x000000, 0x0000FF, 0x000000, 0x0000FF, 0x000000, 0x0000FF,
+  0x0000FF, 0x000000, 0x0000FF, 0x000000, 0x0000FF, 0x000000, 0x0000FF, 0x000000,
+  0x000000, 0x0000FF, 0x000000, 0x0000FF, 0x000000, 0x0000FF, 0x000000, 0x0000FF,
+  0x0000FF, 0x000000, 0x0000FF, 0x000000, 0x0000FF, 0x000000, 0x0000FF, 0x000000
+};
+
 uint32_t static heart_8x8[] = {
   0x000000, 0xFF0000, 0xFF0000, 0x000000, 0xFF0000, 0xFF0000, 0x000000, 0x000000,
   0xFF0000, 0x000000, 0x000000, 0xFF0000, 0x000000, 0x000000, 0xFF0000, 0x000000,
@@ -162,17 +173,41 @@ void drawTestBitmap() {
   drawBitmap(BITMAP_X +  27, BITMAP_Y,  8,  8, showers_8x8);
   drawBitmap(BITMAP_X +  36, BITMAP_Y,  8,  8, snow_8x8);
   drawBitmap(BITMAP_X +  45, BITMAP_Y,  8,  8, storm_8x8);
-  //  drawBitmap(BITMAP_X +  55, BITMAP_Y, 12, 20, minion);
+  drawBitmap(BITMAP_X +  55, BITMAP_Y, 12, 20, minion);
 }
 
 void draw5DayForecast(int *forecasts, int num) {
-
-  drawBitmap(BITMAP_X,       BITMAP_Y,  8,  8, sun_8x8);
-  drawBitmap(BITMAP_X +   9, BITMAP_Y,  8,  8, cloud_8x8);
-  drawBitmap(BITMAP_X +  18, BITMAP_Y,  8,  8, rain_8x8);
-  drawBitmap(BITMAP_X +  27, BITMAP_Y,  8,  8, showers_8x8);
-  drawBitmap(BITMAP_X +  36, BITMAP_Y,  8,  8, snow_8x8);
-  drawBitmap(BITMAP_X +  45, BITMAP_Y,  8,  8, storm_8x8);
+  for (int n = 0; n < num; ++n) { // for each "day"
+    if (forecasts[n] >= 200 && forecasts[n] < 300) {
+      drawBitmap(BITMAP_X + n * 10, BITMAP_Y, 8, 8, storm_8x8);
+    }
+    if ((forecasts[n] >= 300 && forecasts[n] < 400) ||
+	(forecasts[n] >= 520 && forecasts[n] < 600)) {
+      drawBitmap(BITMAP_X + n * 10, BITMAP_Y, 8, 8, showers_8x8);
+    }
+    if (forecasts[n] >= 500 && forecasts[n] < 510) {
+      drawBitmap(BITMAP_X + n * 10, BITMAP_Y, 8, 8, rain_8x8);
+    }
+    if ((forecasts[n] >= 600 && forecasts[n] < 700) ||
+	(forecasts[n] == 511)) {
+      drawBitmap(BITMAP_X + n * 10, BITMAP_Y, 8, 8, snow_8x8);
+    }
+    if (forecasts[n] >= 700 && forecasts[n] < 800) {
+      drawBitmap(BITMAP_X + n * 10, BITMAP_Y, 8, 8, fog_8x8);
+    }
+    if (forecasts[n] >= 800 && forecasts[n] < 802) {
+      drawBitmap(BITMAP_X + n * 10, BITMAP_Y, 8, 8, sun_8x8);
+    }
+    if (forecasts[n] >= 802 && forecasts[n] < 900) {
+      drawBitmap(BITMAP_X + n * 10, BITMAP_Y, 8, 8, cloud_8x8);
+    }
+  }
+  // drawBitmap(BITMAP_X,       BITMAP_Y,  8,  8, sun_8x8);
+  // drawBitmap(BITMAP_X +   9, BITMAP_Y,  8,  8, cloud_8x8);
+  // drawBitmap(BITMAP_X +  18, BITMAP_Y,  8,  8, rain_8x8);
+  // drawBitmap(BITMAP_X +  27, BITMAP_Y,  8,  8, showers_8x8);
+  // drawBitmap(BITMAP_X +  36, BITMAP_Y,  8,  8, snow_8x8);
+  // drawBitmap(BITMAP_X +  45, BITMAP_Y,  8,  8, storm_8x8);
 }
 
 //Source: https://github.com/witnessmenow/LED-Matrix-Display-Examples/blob/master/LED-Matrix-Mario-Display/LED-Matrix-Mario-Display.ino
@@ -196,28 +231,39 @@ void drawHeartBeat() {
 }
 
 
-int fetchOpenWeatherData(uint32_t loc_id, const char *units, const char *appid)
+int fetchOpenWeatherData(uint32_t loc_id, const char *units, const char *appid, int *forcasts)
 {
-  StaticJsonDocument<208> filter;
+  StaticJsonDocument<304> filter;
   JsonObject filter_list_0 = filter["list"].createNestedObject();
   JsonObject filter_list_0_main = filter_list_0.createNestedObject("main");
-
+  JsonObject filter_list_0_weather_0 = filter_list_0["weather"].createNestedObject();
+  JsonObject filter_city = filter.createNestedObject("city");
   char url[128];
-
-  // sanity check units ...
-  // strcmp(units, "standard") ... "metric", or "imperial"
-
-  snprintf(url, 128, "http://api.openweathermap.org/data/2.5/forecast?id=%u&units=%s&appid=%s",
-	   loc_id, units, appid);
-
-  filter["city"] = true;
+  
   filter_list_0["dt"] = true;
-  filter_list_0["weather"][0]["id"] = true;
-  filter_list_0["wind"]["speed"] = true;
+
   filter_list_0_main["temp"] = true;
   filter_list_0_main["pressure"] = true;
   filter_list_0_main["humidity"] = true;
 
+  filter_list_0_weather_0["id"] = true;
+  filter_list_0_weather_0["icon"] = true;
+  
+  filter_list_0["wind"]["speed"] = true;
+  
+  filter_city["name"] = true;
+  filter_city["coord"] = true;
+  filter_city["timezone"] = true;
+  filter_city["sunrise"] = true;
+  filter_city["sunset"] = true;
+
+
+  // sanity check units ...
+  // strcmp(units, "standard") ... "metric", or "imperial"
+  snprintf(url, 128, "http://api.openweathermap.org/data/2.5/forecast?id=%u&units=%s&appid=%s",
+	   loc_id, units, appid);
+
+  
   // Allocate the largest possible document (platform dependent)
   // DynamicJsonDocument doc(ESP.getMaxFreeBlockSize());
   DynamicJsonDocument doc(8192);
@@ -251,6 +297,7 @@ int fetchOpenWeatherData(uint32_t loc_id, const char *units, const char *appid)
     int main_pressure = main["pressure"]; // 1015, 1014, ...    hPa
     int main_humidity = main["humidity"]; // 49, 55, 76,...     Humidity, %
     int weather_0_id = elem["weather"][0]["id"]; // 802, 803,...condition
+    const char* weather_0_icon = elem["weather"][0]["icon"]; // "03d", "04d", "04d", "04n", "04n", "04n", ...
     float wind_speed = elem["wind"]["speed"]; // 1.47, 2.73, ...m/s
 
     Serial.println(F("-------------------------------------------------"));
@@ -258,33 +305,32 @@ int fetchOpenWeatherData(uint32_t loc_id, const char *units, const char *appid)
     Serial.println(dt);
     Serial.println(epoch2String(dt));
     Serial.println(weather_0_id);
+    Serial.println(weather_0_icon);
     Serial.println(main_temp);
     Serial.println(main_pressure);
     Serial.println(main_humidity);
     Serial.println(wind_speed);
+    if (n < 5) // FIXME: look at specific time window and get one id for every day
+      forcasts[n] = weather_0_id;
     n++;
     // if (n > (5 * 3))
     //   break;
   }
   JsonObject city = doc["city"];
-  long city_id = city["id"]; // 2947444
   const char* city_name = city["name"]; // "Böblingen"
 
   float city_coord_lat = city["coord"]["lat"]; // 48.6833
   float city_coord_lon = city["coord"]["lon"]; // 9.0167
 
-  const char* city_country = city["country"]; // "DE"
-  long city_population = city["population"]; // 46282
-  int city_timezone = city["timezone"]; // 7200
+  int city_timezone = city["timezone"]; // 7200 -> use to configure NTP/DST !?
   long city_sunrise = city["sunrise"]; // 1623813640
   long city_sunset = city["sunset"];   // 1623871722
 
   Serial.println(city_name);
   Serial.printf("lat: %f, lon: %f\n", city_coord_lat, city_coord_lon);
-  Serial.println(city_sunrise);
-  Serial.println(city_sunset);
-  Serial.printf("sunrise: %s\n", epoch2String(city_sunrise).c_str());
-  Serial.printf("sunset : %s\n", epoch2String(city_sunset).c_str());
+  Serial.printf("timezone: %d\n", city_timezone);
+  Serial.printf("sunrise:  %s\n", epoch2String(city_sunrise).c_str());
+  Serial.printf("sunset :  %s\n", epoch2String(city_sunset).c_str());
 
   return 0;
 }

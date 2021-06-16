@@ -21,7 +21,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "common.h"
 #include "rgb_display.h"
 #include "mqtt.h"
-#include "creds_mqtt.h"
+#include "creds_mqtt.h" // .sample ?! or commit sample as .h (trouble in my CI)
 #include "clock.h"
 #include "weather.h"
 #include "buzzer.h"
@@ -120,6 +120,8 @@ void setup(){
   logStatusMessage("TSL done!");
 
   //logStatusMessage(WiFi.localIP().toString());
+  fetchOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, forecasts);
+  //draw5DayForecast(forecasts, 5);
   drawTestBitmap();
 
   displayTicker.attach_ms(30, displayUpdater);
@@ -148,9 +150,10 @@ void loop() {
   }
 
   // 10 minute timer, get weather update
-  if ((millis() - sw_timer_10min) > EVERY_10_MINUTES) {
+  if ((millis() - sw_timer_10min) > EVERY_MINUTE){//EVERY_10_MINUTES) {
     sw_timer_10min = millis();
-    fetchOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN);
+    fetchOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, forecasts);
+    clearForecast();
     draw5DayForecast(forecasts, 5);
   }
 
@@ -162,7 +165,8 @@ void loop() {
   if (logMessageActive) {
     if (millis() > messageDisplayMillis + LOG_MESSAGE_PERSISTENCE_MSEC) {
       clearStatusMessage();
-      drawTestBitmap();
+      //drawTestBitmap();
+      draw5DayForecast(forecasts, 5);
     }
   }
 

@@ -65,6 +65,7 @@ void display_init();
 void logStatusMessage(const char *message);
 void logStatusMessage(String message);
 void clearStatusMessage();
+void clearForecast();
 void displaySensorData();
 void displayLightData(float luxValue);
 void displayTest(int delayMs);
