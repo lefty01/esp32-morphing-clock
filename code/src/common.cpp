@@ -13,6 +13,8 @@ int status = WL_IDLE_STATUS;
 // Initialize MQTT client
 PubSubClient client(wifiClient);
 
+HTTPClient http;
+
 //Time of last status update
 unsigned long lastStatusSend = 0;
 
@@ -49,3 +51,16 @@ unsigned long messageDisplayMillis = 0;
 // Sensor data
 float sensorTemp;
 int sensorHumi;
+
+// 5-day forecast ids/icons (https://openweathermap.org/weather-conditions)
+int forecasts[5];
+
+String epoch2String(unsigned long t) {
+  char buf[32];
+  struct tm * ts;
+
+  ts = localtime((time_t*)&t);
+  strftime(buf, sizeof(buf), "%d.%m.%Y %H:%M:%S", ts);
+
+  return String(buf);
+}

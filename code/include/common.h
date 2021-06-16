@@ -8,9 +8,10 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
 #include <ESPNtpClient.h>
+#include <HTTPClient.h>
+#include <ArduinoJson.h>
 
 #ifdef MQTT_USE_SSL
-#include <HTTPClient.h>
 extern WiFiClientSecure wifiClient;
 #else
 extern WiFiClient wifiClient;
@@ -20,6 +21,9 @@ extern int status;
 
 // Initialize MQTT client
 extern PubSubClient client;
+
+// http client (access weather api)
+extern HTTPClient http;
 
 //Time of last status update
 extern unsigned long lastStatusSend;
@@ -54,10 +58,16 @@ extern bool sensorDead;
 extern float sensorTemp;
 extern int sensorHumi;
 
+// 5-day forecast ids/icons (https://openweathermap.org/weather-conditions)
+extern int forecasts[5];
+
 //Just a heartbeat for the watchdog...
 extern bool heartBeat;
 
 //Light sensor
 extern Adafruit_TSL2591 tsl;
+
+// utility functions
+String epoch2String(unsigned long);
 
 #endif

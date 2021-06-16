@@ -162,7 +162,17 @@ void drawTestBitmap() {
   drawBitmap(BITMAP_X +  27, BITMAP_Y,  8,  8, showers_8x8);
   drawBitmap(BITMAP_X +  36, BITMAP_Y,  8,  8, snow_8x8);
   drawBitmap(BITMAP_X +  45, BITMAP_Y,  8,  8, storm_8x8);
-  drawBitmap(BITMAP_X +  55, BITMAP_Y, 12, 20, minion);
+  //  drawBitmap(BITMAP_X +  55, BITMAP_Y, 12, 20, minion);
+}
+
+void draw5DayForecast(int *forecasts, int num) {
+
+  drawBitmap(BITMAP_X,       BITMAP_Y,  8,  8, sun_8x8);
+  drawBitmap(BITMAP_X +   9, BITMAP_Y,  8,  8, cloud_8x8);
+  drawBitmap(BITMAP_X +  18, BITMAP_Y,  8,  8, rain_8x8);
+  drawBitmap(BITMAP_X +  27, BITMAP_Y,  8,  8, showers_8x8);
+  drawBitmap(BITMAP_X +  36, BITMAP_Y,  8,  8, snow_8x8);
+  drawBitmap(BITMAP_X +  45, BITMAP_Y,  8,  8, storm_8x8);
 }
 
 //Source: https://github.com/witnessmenow/LED-Matrix-Display-Examples/blob/master/LED-Matrix-Mario-Display/LED-Matrix-Mario-Display.ino
@@ -184,3 +194,98 @@ void drawHeartBeat() {
     drawBitmap(HEARTBEAT_X, HEARTBEAT_Y, 8, 8, heart_8x8);
   }
 }
+
+
+int fetchOpenWeatherData(uint32_t loc_id, const char *units, const char *appid)
+{
+  StaticJsonDocument<208> filter;
+  JsonObject filter_list_0 = filter["list"].createNestedObject();
+  JsonObject filter_list_0_main = filter_list_0.createNestedObject("main");
+
+  char url[128];
+
+  // sanity check units ...
+  // strcmp(units, "standard") ... "metric", or "imperial"
+
+  snprintf(url, 128, "http://api.openweathermap.org/data/2.5/forecast?id=%u&units=%s&appid=%s",
+	   loc_id, units, appid);
+
+  filter["city"] = true;
+  filter_list_0["dt"] = true;
+  filter_list_0["weather"][0]["id"] = true;
+  filter_list_0["wind"]["speed"] = true;
+  filter_list_0_main["temp"] = true;
+  filter_list_0_main["pressure"] = true;
+  filter_list_0_main["humidity"] = true;
+
+  // Allocate the largest possible document (platform dependent)
+  // DynamicJsonDocument doc(ESP.getMaxFreeBlockSize());
+  DynamicJsonDocument doc(8192);
+
+  http.useHTTP10(true);
+  http.begin(url);
+  http.GET();
+
+  DeserializationError error = deserializeJson(doc, http.getStream(),
+					       DeserializationOption::Filter(filter));
+  if (error) {
+    Serial.print(F("deserializeJson() failed: "));
+    Serial.println(error.f_str());
+    return 1;
+  }
+
+  // Release unused memory
+  doc.shrinkToFit();
+
+  // see: https://openweathermap.org/weather-conditions#Weather-Condition-Codes-2
+  //      for description of weather_0_id
+
+  // TODO: get an avg. or just one forecast (eg. at noon) per day
+  //       such that we have one value for each of the next five days
+
+  uint8_t n = 1;
+  for (JsonObject elem : doc["list"].as<JsonArray>()) {
+    long dt = elem["dt"]; // 1623844800, 1623855600, ...
+    JsonObject main = elem["main"];
+    float main_temp = main["temp"]; // 26.51, 26.12, ... degree Celsius
+    int main_pressure = main["pressure"]; // 1015, 1014, ...    hPa
+    int main_humidity = main["humidity"]; // 49, 55, 76,...     Humidity, %
+    int weather_0_id = elem["weather"][0]["id"]; // 802, 803,...condition
+    float wind_speed = elem["wind"]["speed"]; // 1.47, 2.73, ...m/s
+
+    Serial.println(F("-------------------------------------------------"));
+    Serial.printf("forecast No. %d\n", n);
+    Serial.println(dt);
+    Serial.println(epoch2String(dt));
+    Serial.println(weather_0_id);
+    Serial.println(main_temp);
+    Serial.println(main_pressure);
+    Serial.println(main_humidity);
+    Serial.println(wind_speed);
+    n++;
+    // if (n > (5 * 3))
+    //   break;
+  }
+  JsonObject city = doc["city"];
+  long city_id = city["id"]; // 2947444
+  const char* city_name = city["name"]; // "Böblingen"
+
+  float city_coord_lat = city["coord"]["lat"]; // 48.6833
+  float city_coord_lon = city["coord"]["lon"]; // 9.0167
+
+  const char* city_country = city["country"]; // "DE"
+  long city_population = city["population"]; // 46282
+  int city_timezone = city["timezone"]; // 7200
+  long city_sunrise = city["sunrise"]; // 1623813640
+  long city_sunset = city["sunset"];   // 1623871722
+
+  Serial.println(city_name);
+  Serial.printf("lat: %f, lon: %f\n", city_coord_lat, city_coord_lon);
+  Serial.println(city_sunrise);
+  Serial.println(city_sunset);
+  Serial.printf("sunrise: %s\n", epoch2String(city_sunrise).c_str());
+  Serial.printf("sunset : %s\n", epoch2String(city_sunset).c_str());
+
+  return 0;
+}
+

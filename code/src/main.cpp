@@ -26,9 +26,15 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "weather.h"
 #include "buzzer.h"
 
+#define EVERY_SECOND     1000
+#define EVERY_MINUTE     EVERY_SECOND * 60
+#define EVERY_10_MINUTES EVERY_MINUTE * 10
+
 Ticker displayTicker;
 unsigned long prevEpoch;
 unsigned long lastNTPUpdate;
+unsigned long sw_timer_10min;
+
 
 //Just a blinking minion...
 bool blinkOn;
@@ -141,6 +147,13 @@ void loop() {
     lastNTPUpdate = millis();
   }
 
+  // 10 minute timer, get weather update
+  if ((millis() - sw_timer_10min) > EVERY_10_MINUTES) {
+    sw_timer_10min = millis();
+    fetchOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN);
+    draw5DayForecast(forecasts, 5);
+  }
+
   if (digitalRead(BUTTON1_PIN) == LOW) {
     logStatusMessage("Yess... push it again!!");
   }
@@ -186,6 +199,7 @@ void displayUpdater() {
     prevEpoch = epoch;
   }
 }
+
 
 //TODO: http://www.rinkydinkelectronics.com/t_imageconverter565.php
 

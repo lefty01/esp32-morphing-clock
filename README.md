@@ -26,6 +26,19 @@ You can find the "components" for the project here:
 * The schematics for the PCB used is [here](pcb/)
 * The drawings for the lasercut plexiglass enclosure are [here](case/)
 
+## about weather
+### using openweather (requires api key)
+* 5 day / 3 hour forecast
+https://api.openweathermap.org/data/2.5/forecast?q=Boeblingen,de&units=metric&&appid=API_KEY
+can use cnt=N param to limit output list, but cnt=2 would mean get +3 and +6 hour forcast for today, looks there is no 'one-item-per-day' filter in the api
+
+Free Tier allows for:
+60 calls/minute and/or 1,000,000 calls/month
+
+Maybe it would be possible to get the icon directly from openweather, that way it does not need to be stored ... not sure if its a good idea? icons are on this page:
+https://openweathermap.org/weather-conditions
+
+
 
 ## Thanks
 

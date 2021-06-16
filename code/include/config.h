@@ -18,6 +18,11 @@
 // How long do we consider the sensor data valid before declaring the sensor dead
 #define SENSOR_DEAD_INTERVAL_SEC 600
 
+// weather api config
+#define WEATHER_API_CITY_ID  2947444
+#define WEATHER_API_UNITS    "metric"
+#define WEATHER_API_BASE_URL "http://api.openweathermap.org"
+
 //Button pin
 #define BUTTON1_PIN 0
 
@@ -45,7 +50,7 @@
 #define CLOCK_ANIMATION_DELAY_MSEC 20
 
 // Day of week FIXME position
-#define DOW_X PANEL_WIDTH / 2 // FIXME: width for panels other than 128
+#define DOW_X PANEL_WIDTH / 3 // FIXME: width for panels other than 128
 #define DOW_Y 0 //21
 #define DOW_COLOR ((0x00 & 0xF8) << 8) | ((0x40 & 0xFC) << 3) | (0xFF >> 3)
 // Date
