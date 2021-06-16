@@ -289,7 +289,7 @@ int fetchOpenWeatherData(uint32_t loc_id, const char *units, const char *appid, 
   // TODO: get an avg. or just one forecast (eg. at noon) per day
   //       such that we have one value for each of the next five days
 
-  uint8_t n = 1;
+  uint8_t n = 0;
   for (JsonObject elem : doc["list"].as<JsonArray>()) {
     long dt = elem["dt"]; // 1623844800, 1623855600, ...
     JsonObject main = elem["main"];

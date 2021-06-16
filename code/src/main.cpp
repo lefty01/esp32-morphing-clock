@@ -166,6 +166,7 @@ void loop() {
     if (millis() > messageDisplayMillis + LOG_MESSAGE_PERSISTENCE_MSEC) {
       clearStatusMessage();
       //drawTestBitmap();
+      clearForecast();
       draw5DayForecast(forecasts, 5);
     }
   }
