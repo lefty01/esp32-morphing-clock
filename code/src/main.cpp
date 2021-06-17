@@ -150,7 +150,7 @@ void loop() {
   }
 
   // 10 minute timer, get weather update
-  if ((millis() - sw_timer_10min) > EVERY_MINUTE){//EVERY_10_MINUTES) {
+  if ((millis() - sw_timer_10min) > EVERY_10_MINUTES) {
     sw_timer_10min = millis();
     fetchOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, forecasts);
     clearForecast();
