@@ -4,6 +4,19 @@
 //#define MQTT_USE_SSL 1
 //#define USE_ANDROID_AP 1
 
+// some MQTT configs
+#define MQTT_HOSTNAME "esp32-morphclock"
+#define MQTT_CLIENT_ID MQTT_HOSTNAME
+#define MQTT_REPORT_INTERVAL_MILLIS 30000
+
+// MQTT Topics
+#define MQTT_TEMPERATURE_SENSOR_TOPIC MQTT_CLIENT_ID "/sensor/temperature"
+#define MQTT_HUMIDITY_SENSOR_TOPIC    MQTT_CLIENT_ID "/sensor/humidity"
+#define MQTT_STATUS_TOPIC             MQTT_CLIENT_ID "/state"
+#define MQTT_GENERAL_CMD_TOPIC        MQTT_CLIENT_ID "/cmd"
+#define MQTT_UPDATE_CMD_TOPIC         MQTT_CLIENT_ID "/cmd/update"
+#define MQTT_SEND_MESSAGE_TOPIC       MQTT_CLIENT_ID "/message/send"
+
 // How often we refresh the time from the NTP server
 #define NTP_REFRESH_INTERVAL_SEC 3600
 
@@ -33,8 +46,10 @@
 
 // Screen positioning settings
 // Panel size
-#define PANEL_WIDTH  64
-#define PANEL_HEIGHT 64
+#define PANEL_WIDTH   64
+#define PANEL_HEIGHT  64
+#define MATRIX_WIDTH  PANEL_WIDTH  // used in ESP32-HUB75-MatrixPanel_I2S_DMA.h
+#define MATRIX_HEIGHT PANEL_HEIGHT // used in ESP32-HUB75-MatrixPanel_I2S_DMA.h
 
 // Clock
 #define CLOCK_X 0

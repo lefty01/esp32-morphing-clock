@@ -51,7 +51,7 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length) {
   if ( strcmp(topic, MQTT_SEND_MESSAGE_TOPIC) == 0) {
     Serial.println("incoming message received:");
     Serial.println(value);
-    logStatusMessage(value);
+    logStatusMessage(value, false);
   }
 }
 

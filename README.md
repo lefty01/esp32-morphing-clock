@@ -18,8 +18,10 @@ So far, it does the following:
 This is very much a work in progress, and it is far from being finished. Things that are planned for the future include:
 * Using the current light levels to control the matrix brightness
 * Displaying the weather forecast (min/max temperature, weather icons) pulled from Accuweather. The icons are already in place, I just need to pull and parse the JSON...
-* Display alerts on-screen (received via MQTT)
+* Display alerts on-screen (received via MQTT) -> now working
 * Add a buzzer module and use it to get the user's attention when an alert comes in
+* allow (log) scrolling messages on display
+  checkout: ScrollingTextMatrixTelegram
 
 You can find the "components" for the project here:
 * The full source code is [here](code/)  - requires PlatformIO!

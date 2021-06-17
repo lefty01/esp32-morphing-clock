@@ -62,7 +62,7 @@ uint16_t colorWheel(uint8_t pos);
 //void drawText(int colorWheelOffset);
 void display_init();
 //void display_drawText();
-void logStatusMessage(const char *message);
+void logStatusMessage(const char *message, bool publish /* default: true*/);
 void logStatusMessage(String message);
 void clearStatusMessage();
 void clearForecast();

@@ -17,11 +17,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <Ticker.h>
 
+#include "config.h"
 #include "main.h"
 #include "common.h"
 #include "rgb_display.h"
 #include "mqtt.h"
-#include "creds_mqtt.h" // .sample ?! or commit sample as .h (trouble in my CI)
+#include "creds_mqtt.h"
 #include "clock.h"
 #include "weather.h"
 #include "buzzer.h"
@@ -31,6 +32,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #define EVERY_10_MINUTES EVERY_MINUTE * 10
 
 Ticker displayTicker;
+//Ticker weatherUpdateTicker;
 unsigned long prevEpoch;
 unsigned long lastNTPUpdate;
 unsigned long sw_timer_10min;

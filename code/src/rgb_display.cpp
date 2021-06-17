@@ -23,21 +23,21 @@ uint16_t colorWheel(uint8_t pos) {
 void display_init() {
   HUB75_I2S_CFG::i2s_pins _pins={R1_PIN, G1_PIN, B1_PIN, R2_PIN, G2_PIN, B2_PIN, A_PIN, B_PIN, C_PIN, D_PIN, E_PIN, LAT_PIN, OE_PIN, CLK_PIN};
   HUB75_I2S_CFG mxconfig(
-	PANEL_WIDTH, // Module width
-	PANEL_HEIGHT, // Module height
-	1, // chain length
-	_pins // pin mapping
-  );
+			 PANEL_WIDTH, // Module width
+			 PANEL_HEIGHT, // Module height
+			 1, // chain length
+			 _pins // pin mapping
+			 );
   // mxconfig.gpio.e = E_PIN;
   mxconfig.driver = HUB75_I2S_CFG::FM6124;
   dma_display = new MatrixPanel_I2S_DMA(mxconfig);
 
-	// MUST DO THIS FIRST!
-	dma_display->begin(); // Use default values for matrix dimentions and pins supplied within ESP32-HUB75-MatrixPanel-I2S-DMA.h
+  // MUST DO THIS FIRST!
+  dma_display->begin(); // Use default values for matrix dimentions and pins supplied within ESP32-HUB75-MatrixPanel-I2S-DMA.h
   //dma_display->setPanelBrightness(110);
 }
 
-void logStatusMessage(const char *message) {
+void logStatusMessage(const char *message, bool publish=true) {
   Serial.println(message);
   // Clear the last line first!
   dma_display->fillRect(0, 56, PANEL_WIDTH, 8, 0);
@@ -50,26 +50,16 @@ void logStatusMessage(const char *message) {
   dma_display->setTextColor(LOG_MESSAGE_COLOR);
   dma_display->print(message);
 
+  if (publish)
+    client.publish(MQTT_STATUS_TOPIC, message);
+
   messageDisplayMillis = millis();
   logMessageActive = true;
 }
 
 
 void logStatusMessage(String message) {
-  Serial.println(message);
-  // Clear the last line first!
-  dma_display->fillRect(0, 56, PANEL_WIDTH, 8, 0);
-
-  dma_display->setTextSize(1);     // size 1 == 8 pixels high
-  dma_display->setTextWrap(false); // Don't wrap at end of line - will do ourselves
-
-  dma_display->setCursor(0, 56);   // Write on last line
-
-  dma_display->setTextColor(dma_display->color444(255,0,0));
-  dma_display->print(message);
-
-  messageDisplayMillis = millis();
-  logMessageActive = true;
+  logStatusMessage(message.c_str());
 }
 
 void clearStatusMessage() {
