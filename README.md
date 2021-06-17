@@ -1,3 +1,6 @@
+[![PlatformIO CI status](https://github.com/lefty01/esp32-morphing-clock/actions/workflows/platformio-ci.yml/badge.svg)](https://github.com/lefty01/esp32-morphing-clock/actions/workflows/platformio-ci.yml)
+
+
 # esp32-morphing-clock
 ESP32 HUB75 Matrix Morphing Clock
 
