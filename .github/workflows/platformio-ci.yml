@@ -35,6 +35,6 @@ jobs:
     - name: Run PlatformIO
       run: |
         cd code/include
-        ln -s creds_mqtt.h.sample creds_mqtt.h
+        for h in `ls -1 *.h.sample`; do l=${h%.sample}; ln -s $h $l; done
         cd ..
         pio run -v
