@@ -155,6 +155,15 @@ void loop() {
     fetchOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, forecasts);
     clearForecast();
     draw5DayForecast(forecasts, 5);
+    // DEBUG ...
+    for (int i = 0; i < 5; ++i) {
+        Serial.println(forecasts[i].time);
+	Serial.println(forecasts[i].condition);
+	Serial.println(forecasts[i].temp);
+	Serial.println(forecasts[i].pressure);
+        Serial.println(forecasts[i].humidity);
+	Serial.println(forecasts[i].wind);
+    }
   }
 
   if (digitalRead(BUTTON1_PIN) == LOW) {
@@ -212,6 +221,7 @@ void displayUpdater() {
 //https://iotassistant.io/esp32/enable-hardware-watchdog-timer-esp32-arduino-ide/
 
 //TODO - get and print weather forecast every X interval (4h?)
+//     -> https://github.com/lefty01/esp32-morphing-clock/tree/openweather-api
 //TODO - use light sensor data to set display brightness
 //TODO - add option to turn off display via MQTT
 //TODO - replace bitmap arrays with color565 values!

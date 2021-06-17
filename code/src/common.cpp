@@ -53,7 +53,7 @@ float sensorTemp;
 int sensorHumi;
 
 // 5-day forecast ids/icons (https://openweathermap.org/weather-conditions)
-int forecasts[5];
+struct forecast_info forecasts[5];
 
 String epoch2String(unsigned long t) {
   char buf[32];

@@ -173,32 +173,32 @@ void drawTestBitmap() {
   drawBitmap(BITMAP_X +  27, BITMAP_Y,  8,  8, showers_8x8);
   drawBitmap(BITMAP_X +  36, BITMAP_Y,  8,  8, snow_8x8);
   drawBitmap(BITMAP_X +  45, BITMAP_Y,  8,  8, storm_8x8);
-  drawBitmap(BITMAP_X +  55, BITMAP_Y, 12, 20, minion);
+  //drawBitmap(BITMAP_X +  55, BITMAP_Y, 12, 20, minion);
 }
 
-void draw5DayForecast(int *forecasts, int num) {
+void draw5DayForecast(struct forecast_info *forecasts, int num) {
   for (int n = 0; n < num; ++n) { // for each "day"
-    if (forecasts[n] >= 200 && forecasts[n] < 300) {
+    if (forecasts[n].condition >= 200 && forecasts[n].condition < 300) {
       drawBitmap(BITMAP_X + n * 10, BITMAP_Y, 8, 8, storm_8x8);
     }
-    if ((forecasts[n] >= 300 && forecasts[n] < 400) ||
-	(forecasts[n] >= 520 && forecasts[n] < 600)) {
+    if ((forecasts[n].condition >= 300 && forecasts[n].condition < 400) ||
+	(forecasts[n].condition >= 520 && forecasts[n].condition < 600)) {
       drawBitmap(BITMAP_X + n * 10, BITMAP_Y, 8, 8, showers_8x8);
     }
-    if (forecasts[n] >= 500 && forecasts[n] < 510) {
+    if (forecasts[n].condition >= 500 && forecasts[n].condition < 510) {
       drawBitmap(BITMAP_X + n * 10, BITMAP_Y, 8, 8, rain_8x8);
     }
-    if ((forecasts[n] >= 600 && forecasts[n] < 700) ||
-	(forecasts[n] == 511)) {
+    if ((forecasts[n].condition >= 600 && forecasts[n].condition < 700) ||
+	(forecasts[n].condition == 511)) {
       drawBitmap(BITMAP_X + n * 10, BITMAP_Y, 8, 8, snow_8x8);
     }
-    if (forecasts[n] >= 700 && forecasts[n] < 800) {
+    if (forecasts[n].condition >= 700 && forecasts[n].condition < 800) {
       drawBitmap(BITMAP_X + n * 10, BITMAP_Y, 8, 8, fog_8x8);
     }
-    if (forecasts[n] >= 800 && forecasts[n] < 802) {
+    if (forecasts[n].condition >= 800 && forecasts[n].condition < 802) {
       drawBitmap(BITMAP_X + n * 10, BITMAP_Y, 8, 8, sun_8x8);
     }
-    if (forecasts[n] >= 802 && forecasts[n] < 900) {
+    if (forecasts[n].condition >= 802 && forecasts[n].condition < 900) {
       drawBitmap(BITMAP_X + n * 10, BITMAP_Y, 8, 8, cloud_8x8);
     }
   }
@@ -231,7 +231,7 @@ void drawHeartBeat() {
 }
 
 
-int fetchOpenWeatherData(uint32_t loc_id, const char *units, const char *appid, int *forcasts)
+int fetchOpenWeatherData(uint32_t loc_id, const char *units, const char *appid, struct forecast_info *forecasts)
 {
   StaticJsonDocument<304> filter;
   JsonObject filter_list_0 = filter["list"].createNestedObject();
@@ -291,13 +291,13 @@ int fetchOpenWeatherData(uint32_t loc_id, const char *units, const char *appid, 
 
   uint8_t n = 0;
   for (JsonObject elem : doc["list"].as<JsonArray>()) {
-    long dt = elem["dt"]; // 1623844800, 1623855600, ...
+    long dt = elem["dt"]; // timestamp epoch
     JsonObject main = elem["main"];
     float main_temp = main["temp"]; // 26.51, 26.12, ... degree Celsius
     int main_pressure = main["pressure"]; // 1015, 1014, ...    hPa
     int main_humidity = main["humidity"]; // 49, 55, 76,...     Humidity, %
     int weather_0_id = elem["weather"][0]["id"]; // 802, 803,...condition
-    const char* weather_0_icon = elem["weather"][0]["icon"]; // "03d", "04d", "04d", "04n", "04n", "04n", ...
+    const char* weather_0_icon = elem["weather"][0]["icon"]; // "03d", "04d", "04d",
     float wind_speed = elem["wind"]["speed"]; // 1.47, 2.73, ...m/s
 
     Serial.println(F("-------------------------------------------------"));
@@ -310,8 +310,15 @@ int fetchOpenWeatherData(uint32_t loc_id, const char *units, const char *appid, 
     Serial.println(main_pressure);
     Serial.println(main_humidity);
     Serial.println(wind_speed);
-    if (n < 5) // FIXME: look at specific time window and get one id for every day
-      forcasts[n] = weather_0_id;
+
+    if (n < 5) { // FIXME: look at specific time window and get one id for every day
+      forecasts[n].condition = weather_0_id; // forecasts[n]->condition ?? ptr
+      forecasts[n].temp      = main_temp;
+      forecasts[n].pressure  = main_pressure;
+      forecasts[n].humidity  = main_humidity;
+      forecasts[n].wind      = wind_speed;
+      forecasts[n].time      = dt;
+    }
     n++;
     // if (n > (5 * 3))
     //   break;

@@ -59,7 +59,15 @@ extern float sensorTemp;
 extern int sensorHumi;
 
 // 5-day forecast ids/icons (https://openweathermap.org/weather-conditions)
-extern int forecasts[5];
+struct forecast_info {
+  long time;
+  int condition;
+  float temp;
+  int pressure;
+  int humidity;
+  float wind;
+};
+extern struct forecast_info forecasts[5];
 
 //Just a heartbeat for the watchdog...
 extern bool heartBeat;

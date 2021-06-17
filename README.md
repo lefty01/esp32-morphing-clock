@@ -30,13 +30,16 @@ You can find the "components" for the project here:
 ### openweathermap (requires api key)
 Since I already had api keys on openweathermap I tried this first. It also seems to allow a decent amount of requests in the free account (60 calls/minute and/or 1,000,000 calls/month).
 
-* 5 day / 3 hour forecast
+#### 5 day / 3 hour forecast
 
 the forecast endpoint gives a five day weather forecast for the specified location with a resolution of 3 hours. Given a 24h day we have eight forecasts per day and with five days openweathermap returns a list with about 40 entries. So that's a fair amount of data. To get started lets focus on only one forecast per day (eg. the time around noon for each of the days returned). Each forcasts provides things like temperature, humidity, pressure, wind, clounds ... but also an weather-condition-code and a respective icon (icon file name). so to get an rough overview of the upcoming days we could start showing an icon (those contained in weather.cpp) per day that matches that condition code.
 
 Maybe it would be possible to get the icon directly from openweather (fetch png file and convert it??), that way it does not need to be stored ... not sure if its a good idea? icons are on this page: https://openweathermap.org/weather-conditions
 
-* url
+
+
+
+#### url
 
 https://api.openweathermap.org/data/2.5/forecast?q=Boeblingen,de&units=metric&&appid=API_KEY
 
