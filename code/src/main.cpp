@@ -156,15 +156,15 @@ void loop() {
     sw_timer_10min = millis();
     fetchOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, forecasts);
     clearForecast();
-    draw5DayForecast(forecasts, 5);
+    draw5DayForecastIcons(forecasts, 5);
     // DEBUG ...
     for (int i = 0; i < 5; ++i) {
         Serial.println(forecasts[i].time);
-	Serial.println(forecasts[i].condition);
-	Serial.println(forecasts[i].temp);
-	Serial.println(forecasts[i].pressure);
+        Serial.println(forecasts[i].condition);
+        Serial.println(forecasts[i].temp);
+        Serial.println(forecasts[i].pressure);
         Serial.println(forecasts[i].humidity);
-	Serial.println(forecasts[i].wind);
+        Serial.println(forecasts[i].wind);
     }
   }
 
@@ -178,7 +178,7 @@ void loop() {
       clearStatusMessage();
       //drawTestBitmap();
       clearForecast();
-      draw5DayForecast(forecasts, 5);
+      draw5DayForecastIcons(forecasts, 5);
     }
   }
 

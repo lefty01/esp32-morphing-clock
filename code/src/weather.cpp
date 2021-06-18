@@ -176,7 +176,9 @@ void drawTestBitmap() {
   //drawBitmap(BITMAP_X +  55, BITMAP_Y, 12, 20, minion);
 }
 
-void draw5DayForecast(struct forecast_info *forecasts, int num) {
+// this draws five icons that could represent the next couple of hours (+3h, +6h, ...)
+// or we could put an avg. per day and show next 5-day forecast
+void draw5DayForecastIcons(struct forecast_info *forecasts, int num) {
   for (int n = 0; n < num; ++n) { // for each "day"
     if (forecasts[n].condition >= 200 && forecasts[n].condition < 300) {
       drawBitmap(BITMAP_X + n * 10, BITMAP_Y, 8, 8, storm_8x8);
@@ -202,12 +204,10 @@ void draw5DayForecast(struct forecast_info *forecasts, int num) {
       drawBitmap(BITMAP_X + n * 10, BITMAP_Y, 8, 8, cloud_8x8);
     }
   }
-  // drawBitmap(BITMAP_X,       BITMAP_Y,  8,  8, sun_8x8);
-  // drawBitmap(BITMAP_X +   9, BITMAP_Y,  8,  8, cloud_8x8);
-  // drawBitmap(BITMAP_X +  18, BITMAP_Y,  8,  8, rain_8x8);
-  // drawBitmap(BITMAP_X +  27, BITMAP_Y,  8,  8, showers_8x8);
-  // drawBitmap(BITMAP_X +  36, BITMAP_Y,  8,  8, snow_8x8);
-  // drawBitmap(BITMAP_X +  45, BITMAP_Y,  8,  8, storm_8x8);
+}
+
+void draw5DayForecastValues(struct forecast_info *forecasts, int num) {
+
 }
 
 //Source: https://github.com/witnessmenow/LED-Matrix-Display-Examples/blob/master/LED-Matrix-Mario-Display/LED-Matrix-Mario-Display.ino
