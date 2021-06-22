@@ -231,7 +231,8 @@ void drawHeartBeat() {
 }
 
 
-int fetchOpenWeatherData(uint32_t loc_id, const char *units, const char *appid, struct forecast_info *forecasts)
+int fetchOpenWeatherData(uint32_t loc_id, const char *units, const char *appid,
+			 struct city_info *info)
 {
   StaticJsonDocument<304> filter;
   JsonObject filter_list_0 = filter["list"].createNestedObject();
@@ -247,7 +248,7 @@ int fetchOpenWeatherData(uint32_t loc_id, const char *units, const char *appid, 
   filter_list_0_main["humidity"] = true;
 
   filter_list_0_weather_0["id"] = true;
-  filter_list_0_weather_0["icon"] = true;
+  filter_list_0_weather_0["icon"] = true; // FIXME: do we need this?
   
   filter_list_0["wind"]["speed"] = true;
   
@@ -291,33 +292,33 @@ int fetchOpenWeatherData(uint32_t loc_id, const char *units, const char *appid, 
 
   uint8_t n = 0;
   for (JsonObject elem : doc["list"].as<JsonArray>()) {
-    long dt = elem["dt"]; // timestamp epoch
-    JsonObject main = elem["main"];
-    float main_temp = main["temp"]; // 26.51, 26.12, ... degree Celsius
-    int main_pressure = main["pressure"]; // 1015, 1014, ...    hPa
-    int main_humidity = main["humidity"]; // 49, 55, 76,...     Humidity, %
-    int weather_0_id = elem["weather"][0]["id"]; // 802, 803,...condition
-    const char* weather_0_icon = elem["weather"][0]["icon"]; // "03d", "04d", "04d",
-    float wind_speed = elem["wind"]["speed"]; // 1.47, 2.73, ...m/s
+    long dt           = elem["dt"]; // timestamp epoch
+    JsonObject main   = elem["main"];
+    float main_temp   = main["temp"]; // eg. 26.12, ...       degree Celsius
+    int main_pressure = main["pressure"]; // eg. 1014, ...    hPa
+    int main_humidity = main["humidity"]; // eg. 76,   ...    Humidity, %
+    float wind_speed  = elem["wind"]["speed"]; // eg.  ...    m/s
+    int weather_0_id  = elem["weather"][0]["id"]; // eg. ...  condition status
+    const char* weather_0_icon = elem["weather"][0]["icon"];  // eg. "03d", "04d"
 
-    Serial.println(F("-------------------------------------------------"));
-    Serial.printf("forecast No. %d\n", n);
-    Serial.println(dt);
-    Serial.println(epoch2String(dt));
-    Serial.println(weather_0_id);
-    Serial.println(weather_0_icon);
-    Serial.println(main_temp);
-    Serial.println(main_pressure);
-    Serial.println(main_humidity);
-    Serial.println(wind_speed);
+    // Serial.println(F("-------------------------------------------------"));
+    // Serial.printf("forecast No. %d\n", n);
+    // Serial.println(dt);
+    // Serial.println(epoch2String(dt));
+    // Serial.println(weather_0_id);
+    // Serial.println(weather_0_icon);
+    // Serial.println(main_temp);
+    // Serial.println(main_pressure);
+    // Serial.println(main_humidity);
+    // Serial.println(wind_speed);
 
     if (n < 5) { // FIXME: look at specific time window and get one id for every day
-      forecasts[n].condition = weather_0_id; // forecasts[n]->condition ?? ptr
-      forecasts[n].temp      = main_temp;
-      forecasts[n].pressure  = main_pressure;
-      forecasts[n].humidity  = main_humidity;
-      forecasts[n].wind      = wind_speed;
-      forecasts[n].time      = dt;
+      info->forecasts[n].condition = weather_0_id; // forecasts[n]->condition ?? ptr
+      info->forecasts[n].temp      = main_temp;
+      info->forecasts[n].pressure  = main_pressure;
+      info->forecasts[n].humidity  = main_humidity;
+      info->forecasts[n].wind      = wind_speed;
+      info->forecasts[n].time      = dt;
     }
     n++;
     // if (n > (5 * 3))
@@ -332,6 +333,10 @@ int fetchOpenWeatherData(uint32_t loc_id, const char *units, const char *appid, 
   int city_timezone = city["timezone"]; // 7200 -> use to configure NTP/DST !?
   long city_sunrise = city["sunrise"]; // 1623813640
   long city_sunset = city["sunset"];   // 1623871722
+
+  info->timezone = city_timezone;
+  info->sunrise  = city_sunrise;
+  info->sunset   = city_sunset;
 
   Serial.println(city_name);
   Serial.printf("lat: %f, lon: %f\n", city_coord_lat, city_coord_lon);

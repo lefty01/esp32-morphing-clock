@@ -122,7 +122,20 @@ void setup(){
   logStatusMessage("TSL done!");
 
   //logStatusMessage(WiFi.localIP().toString());
-  fetchOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, forecasts);
+  fetchOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, &my_weather);
+  displayWeatherData(my_weather);
+  // DEBUG ...
+  for (int i = 0; i < 5; ++i) {
+    Serial.println(my_weather.forecasts[i].time);
+    Serial.println(my_weather.forecasts[i].condition);
+    Serial.println(my_weather.forecasts[i].temp);
+    Serial.println(my_weather.forecasts[i].pressure);
+    Serial.println(my_weather.forecasts[i].humidity);
+    Serial.println(my_weather.forecasts[i].wind);
+  }
+  Serial.println(my_weather.timezone);
+  Serial.println(my_weather.sunrise);
+  Serial.println(my_weather.sunset);
   //draw5DayForecast(forecasts, 5);
   drawTestBitmap();
 
@@ -154,18 +167,10 @@ void loop() {
   // 10 minute timer, get weather update
   if ((millis() - sw_timer_10min) > EVERY_10_MINUTES) {
     sw_timer_10min = millis();
-    fetchOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, forecasts);
+    fetchOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, &my_weather);
     clearForecast();
-    draw5DayForecastIcons(forecasts, 5);
-    // DEBUG ...
-    for (int i = 0; i < 5; ++i) {
-        Serial.println(forecasts[i].time);
-        Serial.println(forecasts[i].condition);
-        Serial.println(forecasts[i].temp);
-        Serial.println(forecasts[i].pressure);
-        Serial.println(forecasts[i].humidity);
-        Serial.println(forecasts[i].wind);
-    }
+    draw5DayForecastIcons(my_weather.forecasts, 5);
+    displayWeatherData(my_weather);
   }
 
   if (digitalRead(BUTTON1_PIN) == LOW) {
@@ -178,7 +183,7 @@ void loop() {
       clearStatusMessage();
       //drawTestBitmap();
       clearForecast();
-      draw5DayForecastIcons(forecasts, 5);
+      draw5DayForecastIcons(my_weather.forecasts, 5);
     }
   }
 

@@ -113,6 +113,23 @@ void displayLightData(float luxValue) {
 
 }
 
+void displayWeatherData(const struct city_info &info) {
+  dma_display->fillRect(SENSOR_DATA_X, SENSOR_DATA_Y,
+			SENSOR_DATA_WIDTH, SENSOR_DATA_HEIGHT, 0);
+  dma_display->setTextSize(1);     // size 1 == 8 pixels high
+  dma_display->setTextWrap(false); // Don't wrap at end of line - will do ourselves
+  dma_display->setTextColor(SENSOR_DATA_COLOR);
+  //dma_display->setFont(&FreeSerifBold12pt7b);
+
+  dma_display->setCursor(SENSOR_DATA_X, SENSOR_DATA_Y);
+  dma_display->printf("%4.1f\n%3d%%", info.forecasts[0].temp,
+		      info.forecasts[0].humidity);
+
+  // Draw the degree symbol manually
+  //dma_display->fillRect(SENSOR_DATA_X + 25, SENSOR_DATA_Y, 2, 2, SENSOR_DATA_COLOR);
+
+}
+
 // Simple R/G/B screen fill, for testing displays
 void displayTest(int delayMs) {
   dma_display->fillRect(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT, dma_display->color565(255, 0, 0));

@@ -67,6 +67,7 @@ void logStatusMessage(String message);
 void clearStatusMessage();
 void clearForecast();
 void displaySensorData();
+void displayWeatherData(const struct city_info &info);
 void displayLightData(float luxValue);
 void displayTest(int delayMs);
 

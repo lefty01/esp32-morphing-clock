@@ -67,7 +67,14 @@ struct forecast_info {
   int humidity;
   float wind;
 };
-extern struct forecast_info forecasts[5];
+struct city_info {
+  int  timezone;
+  long sunrise;
+  long sunset;
+  struct forecast_info forecasts[5];
+};
+//extern struct forecast_info forecasts[5];
+extern struct city_info my_weather;
 
 //Just a heartbeat for the watchdog...
 extern bool heartBeat;
@@ -77,5 +84,6 @@ extern Adafruit_TSL2591 tsl;
 
 // utility functions
 String epoch2String(unsigned long);
+String epoch2HHMM(unsigned long);
 
 #endif
