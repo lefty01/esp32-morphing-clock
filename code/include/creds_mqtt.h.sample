@@ -31,4 +31,6 @@
 
 #define OTA_URL "http://10.10.10.10:8080/" MQTT_HOSTNAME ".bin"
 
+#define WEATHER_API_TOKEN "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
 #endif

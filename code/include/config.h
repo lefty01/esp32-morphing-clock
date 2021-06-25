@@ -4,19 +4,37 @@
 //#define MQTT_USE_SSL 1
 //#define USE_ANDROID_AP 1
 
+// some MQTT configs
+#define MQTT_HOSTNAME "esp32-morphclock"
+#define MQTT_CLIENT_ID MQTT_HOSTNAME
+#define MQTT_REPORT_INTERVAL_MILLIS 30000
+
+// MQTT Topics
+#define MQTT_TEMPERATURE_SENSOR_TOPIC MQTT_CLIENT_ID "/sensor/temperature"
+#define MQTT_HUMIDITY_SENSOR_TOPIC    MQTT_CLIENT_ID "/sensor/humidity"
+#define MQTT_STATUS_TOPIC             MQTT_CLIENT_ID "/state"
+#define MQTT_GENERAL_CMD_TOPIC        MQTT_CLIENT_ID "/cmd"
+#define MQTT_UPDATE_CMD_TOPIC         MQTT_CLIENT_ID "/cmd/update"
+#define MQTT_SEND_MESSAGE_TOPIC       MQTT_CLIENT_ID "/message/send"
+
 // How often we refresh the time from the NTP server
 #define NTP_REFRESH_INTERVAL_SEC 3600
 
 // Timezone difference from GMT, expressed in seconds
 #define TIMEZONE_DELTA_SEC 7200
 // DST delta to apply
-#define TIMEZONE_DST_SEC 3600
+#define TIMEZONE_DST_SEC 0 //3600 FIXME does DST work?! doesnt look like
 
 // How long are informational messages kept on screen
 #define LOG_MESSAGE_PERSISTENCE_MSEC 30000
 
 // How long do we consider the sensor data valid before declaring the sensor dead
 #define SENSOR_DEAD_INTERVAL_SEC 600
+
+// weather api config
+#define WEATHER_API_CITY_ID  2947444
+#define WEATHER_API_UNITS    "metric"
+#define WEATHER_API_BASE_URL "http://api.openweathermap.org"
 
 //Button pin
 #define BUTTON1_PIN 0
@@ -28,8 +46,10 @@
 
 // Screen positioning settings
 // Panel size
-#define PANEL_WIDTH  64
-#define PANEL_HEIGHT 64
+#define PANEL_WIDTH   64
+#define PANEL_HEIGHT  64
+#define MATRIX_WIDTH  PANEL_WIDTH  // used in ESP32-HUB75-MatrixPanel_I2S_DMA.h
+#define MATRIX_HEIGHT PANEL_HEIGHT // used in ESP32-HUB75-MatrixPanel_I2S_DMA.h
 
 // Clock
 #define CLOCK_X 0
@@ -45,7 +65,7 @@
 #define CLOCK_ANIMATION_DELAY_MSEC 20
 
 // Day of week FIXME position
-#define DOW_X PANEL_WIDTH / 2 // FIXME: width for panels other than 128
+#define DOW_X PANEL_WIDTH / 2  // FIXME: width for panels other than 128
 #define DOW_Y 0 //21
 #define DOW_COLOR ((0x00 & 0xF8) << 8) | ((0x40 & 0xFC) << 3) | (0xFF >> 3)
 // Date
@@ -78,8 +98,8 @@
 #define BITMAP_X 0
 #define BITMAP_Y 44
 
-#define HEARTBEAT_X 120
-#define HEARTBEAT_Y 21
+#define HEARTBEAT_X PANEL_WIDTH - 8
+#define HEARTBEAT_Y 0
 
 
 

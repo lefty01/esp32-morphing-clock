@@ -62,10 +62,12 @@ uint16_t colorWheel(uint8_t pos);
 //void drawText(int colorWheelOffset);
 void display_init();
 //void display_drawText();
-void logStatusMessage(const char *message);
+void logStatusMessage(const char *message, bool publish /* default: true*/);
 void logStatusMessage(String message);
 void clearStatusMessage();
+void clearForecast();
 void displaySensorData();
+void displayWeatherData(const struct city_info &info);
 void displayLightData(float luxValue);
 void displayTest(int delayMs);
 

@@ -18,13 +18,39 @@ So far, it does the following:
 This is very much a work in progress, and it is far from being finished. Things that are planned for the future include:
 * Using the current light levels to control the matrix brightness
 * Displaying the weather forecast (min/max temperature, weather icons) pulled from Accuweather. The icons are already in place, I just need to pull and parse the JSON...
-* Display alerts on-screen (received via MQTT)
+* Display alerts on-screen (received via MQTT) -> now working
 * Add a buzzer module and use it to get the user's attention when an alert comes in
+* allow (log) scrolling messages on display
+  checkout: ScrollingTextMatrixTelegram
 
 You can find the "components" for the project here:
 * The full source code is [here](code/)  - requires PlatformIO!
 * The schematics for the PCB used is [here](pcb/)
 * The drawings for the lasercut plexiglass enclosure are [here](case/)
+
+## getting weather updates/forecast
+### openweathermap (requires api key)
+Since I already had api keys on openweathermap I tried this first. It also seems to allow a decent amount of requests in the free account (60 calls/minute and/or 1,000,000 calls/month).
+
+#### 5 day / 3 hour forecast
+
+the forecast endpoint gives a five day weather forecast for the specified location with a resolution of 3 hours. Given a 24h day we have eight forecasts per day and with five days openweathermap returns a list with about 40 entries. So that's a fair amount of data. To get started lets focus on only one forecast per day (eg. the time around noon for each of the days returned). Each forcasts provides things like temperature, humidity, pressure, wind, clounds ... but also an weather-condition-code and a respective icon (icon file name). so to get an rough overview of the upcoming days we could start showing an icon (those contained in weather.cpp) per day that matches that condition code.
+
+Maybe it would be possible to get the icon directly from openweather (fetch png file and convert it??), that way it does not need to be stored ... not sure if its a good idea? icons are on this page: https://openweathermap.org/weather-conditions
+
+
+
+
+#### url
+
+https://api.openweathermap.org/data/2.5/forecast?q=Boeblingen,de&units=metric&&appid=API_KEY
+
+The query string could contain cnt=N param to limit output list, but cnt=2 would mean get +3 and +6 hour forcast for today, looks there is no 'one-item-per-day' filter in the api.
+
+We use ArduinJson to parse the response as a stream directly after submitting the api request. Some ArduinoJson filtering is applied to further reduce the returned data.
+
+
+
 
 
 ## Thanks

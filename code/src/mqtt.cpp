@@ -12,6 +12,10 @@ char mqtt_buffer[MQTT_BUFMAX];
 
 void mqtt_callback(char* topic, byte* payload, unsigned int length) {
   // handle message arrived
+  char value[length + 1];
+  memcpy(value, payload, length);
+  value[length] = '\0';
+
   /*
   Serial.print("Message arrived [");
   Serial.print(topic);
@@ -23,16 +27,14 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length) {
   */
 
   if ( strcmp(topic, MQTT_TEMPERATURE_SENSOR_TOPIC) == 0) {
-    payload[length]=0;
-    sensorTemp = atof((char *)payload);
+    sensorTemp = atof(value);
     lastSensorRead = millis();
     sensorDead = false;
     newSensorData = true;
   }
 
   if ( strcmp(topic, MQTT_HUMIDITY_SENSOR_TOPIC) == 0) {
-    payload[length] = 0;
-    sensorHumi = atoi((char *)payload);
+    sensorHumi = atoi(value);
     lastSensorRead = millis();
     sensorDead = false;
     newSensorData = true;
@@ -44,6 +46,12 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length) {
     if ((char)payload[0] == '1') {
       perform_update();
     }
+  }
+
+  if ( strcmp(topic, MQTT_SEND_MESSAGE_TOPIC) == 0) {
+    Serial.println("incoming message received:");
+    Serial.println(value);
+    logStatusMessage(value, false);
   }
 }
 
@@ -61,17 +69,24 @@ void reconnect() {
     }
     Serial.print("Connecting to MQTT node...");
     // Attempt to connect (clientId, username, password)
-    if ( client.connect(MQTT_CLIENT_ID, MQTT_USERNAME, MQTT_PASSWORD) ) {
+    if ( client.connect(MQTT_CLIENT_ID, MQTT_USERNAME, MQTT_PASSWORD,
+			MQTT_STATUS_TOPIC, 1, 1, "OFFLINE") ) {
       Serial.println( "[DONE]" );
       Serial.println("Subscribing to topics:");
+      Serial.println(MQTT_GENERAL_CMD_TOPIC);
       Serial.println(MQTT_UPDATE_CMD_TOPIC);
+      Serial.println(MQTT_SEND_MESSAGE_TOPIC);
       Serial.println(MQTT_TEMPERATURE_SENSOR_TOPIC);
       Serial.println(MQTT_HUMIDITY_SENSOR_TOPIC);
       Serial.println("... done");
 
+      client.subscribe(MQTT_GENERAL_CMD_TOPIC);
       client.subscribe(MQTT_UPDATE_CMD_TOPIC);
       client.subscribe(MQTT_TEMPERATURE_SENSOR_TOPIC);
       client.subscribe(MQTT_HUMIDITY_SENSOR_TOPIC);
+      client.subscribe(MQTT_SEND_MESSAGE_TOPIC);
+      //client.subscribe();
+
       client.publish(MQTT_STATUS_TOPIC, "CONNECTED", true);
     } else {
       logStatusMessage("MQTT Fail, retrying...");

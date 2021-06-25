@@ -7,5 +7,4 @@
 void buzzer_init();
 void buzzer_tone(double freq, uint32_t durationMs);
 
-
 #endif
