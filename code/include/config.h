@@ -45,43 +45,32 @@
 #define BUZZER_PWM_RESOLUTION 8
 
 // Screen positioning settings
-// Panel size
-#define PANEL_WIDTH   64
-#define PANEL_HEIGHT  64
+// define Panel type, selects panel size
+//#define PANEL_SIZE_64_x_64 -> platformio.ini
+#if defined PANEL_SIZE_64_x_64
+#include "config_64x64.h"
+#elif defined PANEL_SIZE_128_x_64
+#include "config_128x64.h"
+#else
+#error ***** ATTENTION NO PANEL SIZE DEFINED ******
+#endif
+
 #define MATRIX_WIDTH  PANEL_WIDTH  // used in ESP32-HUB75-MatrixPanel_I2S_DMA.h
 #define MATRIX_HEIGHT PANEL_HEIGHT // used in ESP32-HUB75-MatrixPanel_I2S_DMA.h
 
-// Clock
-#define CLOCK_X 0
-#define CLOCK_Y 24
-#define CLOCK_SEGMENT_HEIGHT 6
-#define CLOCK_SEGMENT_WIDTH  6
-#define CLOCK_SEGMENT_SPACING 4
-#define CLOCK_WIDTH  6*(CLOCK_SEGMENT_WIDTH+CLOCK_SEGMENT_SPACING)+4
-#define CLOCK_HEIGHT 2*CLOCK_SEGMENT_HEIGHT+3
-//color565 == ((red & 0xF8) << 8) | ((green & 0xFC) << 3) | (blue >> 3)
 #define CLOCK_DIGIT_COLOR  ((0x00 & 0xF8) << 8) | ((0xFF & 0xFC) << 3) | (0xFF >> 3)
-//Delay in ms for clock animation - should be below 30ms for a segment size of 8
+
+// Delay in ms for clock animation - should be below 30ms for a segment size of 8
 #define CLOCK_ANIMATION_DELAY_MSEC 20
 
-// Day of week FIXME position
-#define DOW_X PANEL_WIDTH / 2  // FIXME: width for panels other than 128
-#define DOW_Y 0 //21
+// Day of week color
 #define DOW_COLOR ((0x00 & 0xF8) << 8) | ((0x40 & 0xFC) << 3) | (0xFF >> 3)
-// Date
-#define DATE_X DOW_X
-#define DATE_Y DOW_Y+11
+
+// Date color
 #define DATE_COLOR DOW_COLOR
-//Width and height are for both DATE and DOW
-#define DATE_WIDTH 40
-#define DATE_HEIGHT 18
 
 
 // Weather sensor data
-#define SENSOR_DATA_X 0
-#define SENSOR_DATA_Y 0
-#define SENSOR_DATA_WIDTH PANEL_WIDTH // FIXME
-#define SENSOR_DATA_HEIGHT 6
 #define SENSOR_DATA_COLOR ((0x00 & 0xF8) << 8) | ((0x8F & 0xFC) << 3) | (0x00 >> 3)
 #define SENSOR_ERROR_DATA_COLOR ((0xFF & 0xF8) << 8) | ((0x00 & 0xFC) << 3) | (0x00 >> 3)
 
@@ -94,13 +83,6 @@
 
 // Log messages at the bottom
 #define LOG_MESSAGE_COLOR ((0xFF & 0xF8) << 8) | ((0x00 & 0xFC) << 3) | (0x00 >> 3)
-
-#define BITMAP_X 0
-#define BITMAP_Y 44
-
-#define HEARTBEAT_X PANEL_WIDTH - 8
-#define HEARTBEAT_Y 0
-
 
 
 #endif
