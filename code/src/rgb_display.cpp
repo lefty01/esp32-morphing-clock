@@ -62,6 +62,7 @@ void logStatusMessage(String message) {
   logStatusMessage(message.c_str());
 }
 
+// FIXME hardcoded 56 value !
 void clearStatusMessage() {
    dma_display->fillRect(0, 56, PANEL_WIDTH, 8, 0);
    logMessageActive = false;
@@ -69,6 +70,11 @@ void clearStatusMessage() {
 
 void clearForecast() {
    dma_display->fillRect(0, BITMAP_Y, PANEL_WIDTH, 8, 0);
+}
+
+void clearSensorData() {
+  dma_display->fillRect(SENSOR_DATA_X, SENSOR_DATA_Y,
+			SENSOR_DATA_WIDTH, SENSOR_DATA_HEIGHT, 0);
 }
 
 void displaySensorData() {
@@ -113,7 +119,11 @@ void displayLightData(float luxValue) {
 
 }
 
+// FIXME: for now this is showing static info
+//        getting the first item (+3h) from forecast info and show temp and humidity
 void displayWeatherData(const struct city_info &info) {
+  Serial.printf("displayWeatherData: temp=%2.1f\n", info.forecasts[0].temp);
+
   dma_display->fillRect(SENSOR_DATA_X, SENSOR_DATA_Y,
 			SENSOR_DATA_WIDTH, SENSOR_DATA_HEIGHT, 0);
   dma_display->setTextSize(1);     // size 1 == 8 pixels high
@@ -122,7 +132,7 @@ void displayWeatherData(const struct city_info &info) {
   //dma_display->setFont(&FreeSerifBold12pt7b);
 
   dma_display->setCursor(SENSOR_DATA_X, SENSOR_DATA_Y);
-  dma_display->printf("%4.1f\n%3d%%", info.forecasts[0].temp,
+  dma_display->printf("%2.1f\n%3d%%", info.forecasts[0].temp,
 		      info.forecasts[0].humidity);
 
   // Draw the degree symbol manually

@@ -66,6 +66,7 @@ void reconnect() {
         Serial.print(".");
       }
       Serial.println("Connected to AP");
+      logStatusMessage("MQTT lost");
     }
     Serial.print("Connecting to MQTT node...");
     // Attempt to connect (clientId, username, password)
@@ -88,6 +89,8 @@ void reconnect() {
       //client.subscribe();
 
       client.publish(MQTT_STATUS_TOPIC, "CONNECTED", true);
+      client.publish(MQTT_STATUS_TOPIC, PROG_VERSION);
+      logStatusMessage("MQTT connected");
     } else {
       logStatusMessage("MQTT Fail, retrying...");
       Serial.print( "[FAILED] [ rc = " );

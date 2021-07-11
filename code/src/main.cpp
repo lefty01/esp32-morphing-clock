@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+
 #include <Ticker.h>
 
 #include "config.h"
@@ -85,7 +86,7 @@ void setup(){
 
   logStatusMessage("Buzzer setup");
   buzzer_init();
-  buzzer_tone(500, 300);
+  //buzzer_tone(500, 300);
   displayTest(300);
 
   logStatusMessage("Connecting to WiFi...");
@@ -101,7 +102,7 @@ void setup(){
   logStatusMessage("WiFi connected!");
 
   logStatusMessage("NTP time...");
-  configTime(TIMEZONE_DELTA_SEC, TIMEZONE_DST_SEC, "europe.pool.ntp.org");
+  configTime(TIMEZONE_DELTA_SEC, TIMEZONE_DST_SEC, NTP_SERVER);
   lastNTPUpdate = millis();
   logStatusMessage("NTP done!");
 
@@ -124,6 +125,7 @@ void setup(){
   //logStatusMessage(WiFi.localIP().toString());
   fetchOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, &my_weather);
   displayWeatherData(my_weather);
+
   // DEBUG ...
   for (int i = 0; i < 5; ++i) {
     Serial.println(my_weather.forecasts[i].time);
@@ -151,16 +153,16 @@ void loop() {
     WiFi.reconnect();
   }
 
-  if ( !client.connected() ) {
+  if (!client.connected()) {
     logStatusMessage("MQTT lost");
     reconnect();
   }
   client.loop();
 
   // Periodically refresh NTP time
-  if (millis() - lastNTPUpdate > 1000*NTP_REFRESH_INTERVAL_SEC) {
+  if (millis() - lastNTPUpdate > (1000 * NTP_REFRESH_INTERVAL_SEC)) {
     logStatusMessage("NTP Refresh");
-    configTime(TIMEZONE_DELTA_SEC, TIMEZONE_DST_SEC, "europe.pool.ntp.org");
+    configTime(TIMEZONE_DELTA_SEC, TIMEZONE_DST_SEC, NTP_SERVER);
     lastNTPUpdate = millis();
   }
 
@@ -169,6 +171,8 @@ void loop() {
     sw_timer_10min = millis();
     fetchOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, &my_weather);
     clearForecast();
+    clearSensorData();
+
     draw5DayForecastIcons(my_weather.forecasts, 5);
     displayWeatherData(my_weather);
   }
@@ -194,7 +198,7 @@ void loop() {
   }
 
   // Is the sensor data too old?
-  if (millis() - lastSensorRead > 1000*SENSOR_DEAD_INTERVAL_SEC) {
+  if (millis() - lastSensorRead > 1000*SENSOR_DEAD_INTERVAL_SEC) { // TODO: via ticker!?
     sensorDead = true;
     //displaySensorData();FIXME position
   }
@@ -203,7 +207,7 @@ void loop() {
   //displayLightData(tslData); FIXME position
 
   heartBeat = !heartBeat;
-  drawHeartBeat();
+  //drawHeartBeat(); // TODO: config option heartbeat
 
   delay(500);
 }

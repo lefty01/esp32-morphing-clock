@@ -1,6 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+
 //#define MQTT_USE_SSL 1
 //#define USE_ANDROID_AP 1
 
@@ -19,6 +20,7 @@
 
 // How often we refresh the time from the NTP server
 #define NTP_REFRESH_INTERVAL_SEC 3600
+#define NTP_SERVER "europe.pool.ntp.org"
 
 // Timezone difference from GMT, expressed in seconds
 #define TIMEZONE_DELTA_SEC 7200
@@ -74,11 +76,6 @@
 #define SENSOR_DATA_COLOR ((0x00 & 0xF8) << 8) | ((0x8F & 0xFC) << 3) | (0x00 >> 3)
 #define SENSOR_ERROR_DATA_COLOR ((0xFF & 0xF8) << 8) | ((0x00 & 0xFC) << 3) | (0x00 >> 3)
 
-// Light sensor data
-#define LIGHT_DATA_X 0
-#define LIGHT_DATA_Y 9
-#define LIGHT_DATA_WIDTH PANEL_WIDTH // FIXME
-#define LIGHT_DATA_HEIGHT 8
 #define LIGHT_DATA_COLOR ((0x00 & 0xF8) << 8) | ((0xFF & 0xFC) << 3) | (0x00 >> 3)
 
 // Log messages at the bottom

@@ -1,6 +1,6 @@
-#ifndef _VERSION_H__
-#define _VERSION_H__
+#ifndef _PROG_VERSION_H__
+#define _PROG_VERSION_H__
 
-const char* VERSION = "0.0.2";
+const char* PROG_VERSION = "0.0.4";
 
 #endif

@@ -2,6 +2,7 @@
 #include "common.h"
 #include "mqtt.h"
 #include "rgb_display.h"
+#include "version.h"
 
 #ifdef MQTT_USE_SSL
 WiFiClientSecure wifiClient;

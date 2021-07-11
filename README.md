@@ -24,6 +24,8 @@ This is very much a work in progress, and it is far from being finished. Things 
 * allow (log) scrolling messages on display
   checkout: ScrollingTextMatrixTelegram
 
+* get tiny font *if not already available here!??) from eg. MorphingClockRemix github
+
 You can find the "components" for the project here:
 * The full source code is [here](code/)  - requires PlatformIO!
 * The schematics for the PCB used is [here](pcb/)
@@ -51,7 +53,8 @@ The query string could contain cnt=N param to limit output list, but cnt=2 would
 We use ArduinJson to parse the response as a stream directly after submitting the api request. Some ArduinoJson filtering is applied to further reduce the returned data.
 
 
-
+## Issues
+* the "middle" row of the clock digigts is somehow "mirrowed" at the top row, so it is slightly visible but not very bight.
 
 
 ## Thanks

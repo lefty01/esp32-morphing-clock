@@ -8,12 +8,36 @@
 #include "ota_update.h"
 #include "rgb_display.h"
 
+
+void update_started() {
+  Serial.println("CALLBACK:  HTTP update process started");
+}
+
+void update_finished() {
+  Serial.println("CALLBACK:  HTTP update process finished");
+}
+
+void update_progress(int cur, int total) {
+  Serial.printf("CALLBACK:  HTTP update process at %d of %d bytes...\n", cur, total);
+}
+
+void update_error(int err) {
+  Serial.printf("CALLBACK:  HTTP update fatal error code %d\n", err);
+}
+
+
 void perform_update() {
   //Warn before performing update
   Serial.print("Starting OTA update from: ");
   Serial.println(OTA_URL);
   logStatusMessage("OTA Requested!");
   delay(500);
+
+  // Add optional callback notifiers
+  // ESPhttpUpdate.onStart(update_started);
+  // ESPhttpUpdate.onEnd(update_finished);
+  // ESPhttpUpdate.onProgress(update_progress);
+  // ESPhttpUpdate.onError(update_error);
 
   // ESPhttpUpdate.update("sass.ro", 80, OTA_FILENAME);
   t_httpUpdate_return ret = ESPhttpUpdate.update(OTA_URL);

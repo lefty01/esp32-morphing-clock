@@ -11,6 +11,8 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 
+extern const char* PROG_VERSION;
+
 #ifdef MQTT_USE_SSL
 extern WiFiClientSecure wifiClient;
 #else
