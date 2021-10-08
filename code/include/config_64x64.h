@@ -15,7 +15,7 @@
 #define CLOCK_HEIGHT 2*CLOCK_SEGMENT_HEIGHT+3
 
 // Day of week
-#define DOW_X PANEL_WIDTH / 2
+#define DOW_X ((PANEL_WIDTH / 2) - 1)
 #define DOW_Y 0
 
 // Date

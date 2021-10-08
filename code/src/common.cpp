@@ -52,6 +52,8 @@ unsigned long messageDisplayMillis = 0;
 // Sensor data
 float sensorTemp;
 int sensorHumi;
+int sensorCo2Mqtt;
+
 
 // 5-day forecast ids/icons (https://openweathermap.org/weather-conditions)
 //struct forecast_info forecasts[5];

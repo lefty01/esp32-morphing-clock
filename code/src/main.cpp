@@ -33,6 +33,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #define EVERY_10_MINUTES EVERY_MINUTE * 10
 
 Ticker displayTicker;
+//Ticker sensorDataTicker;
 //Ticker weatherUpdateTicker;
 unsigned long prevEpoch;
 unsigned long lastNTPUpdate;
@@ -142,6 +143,7 @@ void setup(){
   drawTestBitmap();
 
   displayTicker.attach_ms(30, displayUpdater);
+  //sensorDataTicker.attach_ms(60 * 1000, sensorUpdater);
 
   buzzer_tone(1000, 300);
 }
@@ -225,6 +227,8 @@ void displayUpdater() {
   }
 }
 
+//void sensorUpdater() {
+//}
 
 //TODO: http://www.rinkydinkelectronics.com/t_imageconverter565.php
 

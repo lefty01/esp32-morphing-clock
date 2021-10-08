@@ -13,10 +13,12 @@
 // MQTT Topics
 #define MQTT_TEMPERATURE_SENSOR_TOPIC MQTT_CLIENT_ID "/sensor/temperature"
 #define MQTT_HUMIDITY_SENSOR_TOPIC    MQTT_CLIENT_ID "/sensor/humidity"
+#define MQTT_CO2_SENSOR_TOPIC         MQTT_CLIENT_ID "/co2_ampel1/co2ppm"
 #define MQTT_STATUS_TOPIC             MQTT_CLIENT_ID "/state"
 #define MQTT_GENERAL_CMD_TOPIC        MQTT_CLIENT_ID "/cmd"
 #define MQTT_UPDATE_CMD_TOPIC         MQTT_CLIENT_ID "/cmd/update"
 #define MQTT_SEND_MESSAGE_TOPIC       MQTT_CLIENT_ID "/message/send"
+#define MQTT_BUZZER_CONFIG_TOPIC      MQTT_CLIENT_ID "/buzzer/config"
 
 // How often we refresh the time from the NTP server
 #define NTP_REFRESH_INTERVAL_SEC 3600
