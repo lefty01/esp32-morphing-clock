@@ -10,6 +10,8 @@ then
   exit 1
 fi
 
+# http://192.168.1.240/esp32dev_mqttssl/firmware.bin
+
 cp .pio/build/esp32dev/firmware.bin /tmp/$MQTT_ESP_HOSTNAME.bin
 
 echo "Starting container..."

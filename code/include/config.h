@@ -1,6 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+
 //#define MQTT_USE_SSL 1
 //#define USE_ANDROID_AP 1
 
@@ -12,13 +13,19 @@
 // MQTT Topics
 #define MQTT_TEMPERATURE_SENSOR_TOPIC MQTT_CLIENT_ID "/sensor/temperature"
 #define MQTT_HUMIDITY_SENSOR_TOPIC    MQTT_CLIENT_ID "/sensor/humidity"
+#define MQTT_CO2_SENSOR_TOPIC         MQTT_CLIENT_ID "/co2_ampel1/co2ppm"
 #define MQTT_STATUS_TOPIC             MQTT_CLIENT_ID "/state"
 #define MQTT_GENERAL_CMD_TOPIC        MQTT_CLIENT_ID "/cmd"
 #define MQTT_UPDATE_CMD_TOPIC         MQTT_CLIENT_ID "/cmd/update"
+//#define MQTT_VERSION_CMD_TOPIC        MQTT_CLIENT_ID "/cmd/version"
 #define MQTT_SEND_MESSAGE_TOPIC       MQTT_CLIENT_ID "/message/send"
+#define MQTT_BUZZER_CONFIG_TOPIC      MQTT_CLIENT_ID "/buzzer/config"
 
 // How often we refresh the time from the NTP server
 #define NTP_REFRESH_INTERVAL_SEC 3600
+#define NTP_SERVER "europe.pool.ntp.org"
+// https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv
+#define NTP_MY_TIMEZONE "CET-1CEST,M3.5.0,M10.5.0/3"
 
 // Timezone difference from GMT, expressed in seconds
 #define TIMEZONE_DELTA_SEC 7200
@@ -74,11 +81,6 @@
 #define SENSOR_DATA_COLOR ((0x00 & 0xF8) << 8) | ((0x8F & 0xFC) << 3) | (0x00 >> 3)
 #define SENSOR_ERROR_DATA_COLOR ((0xFF & 0xF8) << 8) | ((0x00 & 0xFC) << 3) | (0x00 >> 3)
 
-// Light sensor data
-#define LIGHT_DATA_X 0
-#define LIGHT_DATA_Y 9
-#define LIGHT_DATA_WIDTH PANEL_WIDTH // FIXME
-#define LIGHT_DATA_HEIGHT 8
 #define LIGHT_DATA_COLOR ((0x00 & 0xF8) << 8) | ((0xFF & 0xFC) << 3) | (0x00 >> 3)
 
 // Log messages at the bottom

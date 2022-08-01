@@ -64,6 +64,7 @@ void logStatusMessage(const char *message, bool publish /* default: true*/);
 void logStatusMessage(String message);
 void clearStatusMessage();
 void clearForecast();
+void clearSensorData();
 void displaySensorData();
 void displayWeatherData(const struct city_info &info);
 void displayLightData(float luxValue);

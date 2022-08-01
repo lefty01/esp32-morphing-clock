@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+
 #include <Ticker.h>
 
 #include "config.h"
@@ -26,12 +27,14 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "clock.h"
 #include "weather.h"
 #include "buzzer.h"
+#include "time.h"
 
 #define EVERY_SECOND     1000
 #define EVERY_MINUTE     EVERY_SECOND * 60
 #define EVERY_10_MINUTES EVERY_MINUTE * 10
 
 Ticker displayTicker;
+//Ticker sensorDataTicker;
 //Ticker weatherUpdateTicker;
 unsigned long prevEpoch;
 unsigned long lastNTPUpdate;
@@ -41,39 +44,6 @@ unsigned long sw_timer_10min;
 //Just a blinking minion...
 bool blinkOn;
 
-/* void printLocalTime(){
-  struct tm timeinfo;
-  if(!getLocalTime(&timeinfo)){
-    Serial.println("Failed to obtain time");
-    return;
-  }
-  Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
-  Serial.print("Day of week: ");
-  Serial.println(&timeinfo, "%A");
-  Serial.print("Month: ");
-  Serial.println(&timeinfo, "%B");
-  Serial.print("Day of Month: ");
-  Serial.println(&timeinfo, "%d");
-  Serial.print("Year: ");
-  Serial.println(&timeinfo, "%Y");
-  Serial.print("Hour: ");
-  Serial.println(&timeinfo, "%H");
-  Serial.print("Hour (12 hour format): ");
-  Serial.println(&timeinfo, "%I");
-  Serial.print("Minute: ");
-  Serial.println(&timeinfo, "%M");
-  Serial.print("Second: ");
-  Serial.println(&timeinfo, "%S");
-
-  Serial.println("Time variables");
-  char timeHour[3];
-  strftime(timeHour,3, "%H", &timeinfo);
-  Serial.println(timeHour);
-  char timeWeekDay[10];
-  strftime(timeWeekDay,10, "%A", &timeinfo);
-  Serial.println(timeWeekDay);
-  Serial.println();
-} */
 
 void setup(){
   display_init();
@@ -85,7 +55,7 @@ void setup(){
 
   logStatusMessage("Buzzer setup");
   buzzer_init();
-  buzzer_tone(500, 300);
+  //buzzer_tone(500, 300);
   displayTest(300);
 
   logStatusMessage("Connecting to WiFi...");
@@ -101,7 +71,7 @@ void setup(){
   logStatusMessage("WiFi connected!");
 
   logStatusMessage("NTP time...");
-  configTime(TIMEZONE_DELTA_SEC, TIMEZONE_DST_SEC, "europe.pool.ntp.org");
+  configTime(TIMEZONE_DELTA_SEC, TIMEZONE_DST_SEC, NTP_SERVER);
   lastNTPUpdate = millis();
   logStatusMessage("NTP done!");
 
@@ -124,6 +94,7 @@ void setup(){
   //logStatusMessage(WiFi.localIP().toString());
   fetchOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, &my_weather);
   displayWeatherData(my_weather);
+
   // DEBUG ...
   for (int i = 0; i < 5; ++i) {
     Serial.println(my_weather.forecasts[i].time);
@@ -140,6 +111,7 @@ void setup(){
   drawTestBitmap();
 
   displayTicker.attach_ms(30, displayUpdater);
+  //sensorDataTicker.attach_ms(60 * 1000, sensorUpdater);
 
   buzzer_tone(1000, 300);
 }
@@ -151,16 +123,16 @@ void loop() {
     WiFi.reconnect();
   }
 
-  if ( !client.connected() ) {
+  if (!client.connected()) {
     logStatusMessage("MQTT lost");
     reconnect();
   }
   client.loop();
 
   // Periodically refresh NTP time
-  if (millis() - lastNTPUpdate > 1000*NTP_REFRESH_INTERVAL_SEC) {
+  if (millis() - lastNTPUpdate > (1000 * NTP_REFRESH_INTERVAL_SEC)) {
     logStatusMessage("NTP Refresh");
-    configTime(TIMEZONE_DELTA_SEC, TIMEZONE_DST_SEC, "europe.pool.ntp.org");
+    configTime(TIMEZONE_DELTA_SEC, TIMEZONE_DST_SEC, NTP_SERVER);
     lastNTPUpdate = millis();
   }
 
@@ -169,6 +141,8 @@ void loop() {
     sw_timer_10min = millis();
     fetchOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, &my_weather);
     clearForecast();
+    clearSensorData();
+
     draw5DayForecastIcons(my_weather.forecasts, 5);
     displayWeatherData(my_weather);
   }
@@ -177,7 +151,7 @@ void loop() {
     logStatusMessage("Yess... push it again!!");
   }
 
-  //Do we need to clear the status message from the screen?
+  // Do we need to clear the status message from the screen?
   if (logMessageActive) {
     if (millis() > messageDisplayMillis + LOG_MESSAGE_PERSISTENCE_MSEC) {
       clearStatusMessage();
@@ -194,7 +168,7 @@ void loop() {
   }
 
   // Is the sensor data too old?
-  if (millis() - lastSensorRead > 1000*SENSOR_DEAD_INTERVAL_SEC) {
+  if ((millis() - lastSensorRead) > 1000 * SENSOR_DEAD_INTERVAL_SEC) { // TODO: via ticker!?
     sensorDead = true;
     //displaySensorData();FIXME position
   }
@@ -203,7 +177,7 @@ void loop() {
   //displayLightData(tslData); FIXME position
 
   heartBeat = !heartBeat;
-  drawHeartBeat();
+  //drawHeartBeat(); // TODO: config option heartbeat
 
   delay(500);
 }
@@ -221,6 +195,8 @@ void displayUpdater() {
   }
 }
 
+//void sensorUpdater() {
+//}
 
 //TODO: http://www.rinkydinkelectronics.com/t_imageconverter565.php
 

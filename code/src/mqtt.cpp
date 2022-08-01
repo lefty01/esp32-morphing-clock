@@ -26,21 +26,28 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length) {
   Serial.println();
   */
 
-  if ( strcmp(topic, MQTT_TEMPERATURE_SENSOR_TOPIC) == 0) {
+  if (strcmp(topic, MQTT_TEMPERATURE_SENSOR_TOPIC) == 0) {
     sensorTemp = atof(value);
     lastSensorRead = millis();
     sensorDead = false;
     newSensorData = true;
   }
 
-  if ( strcmp(topic, MQTT_HUMIDITY_SENSOR_TOPIC) == 0) {
+  if (strcmp(topic, MQTT_HUMIDITY_SENSOR_TOPIC) == 0) {
     sensorHumi = atoi(value);
     lastSensorRead = millis();
     sensorDead = false;
     newSensorData = true;
   }
 
-  if ( strcmp(topic, MQTT_UPDATE_CMD_TOPIC)==0 ) {
+  if (strcmp(topic, MQTT_CO2_SENSOR_TOPIC) == 0) {
+    sensorCo2Mqtt = atoi(value);
+    lastSensorRead = millis();
+    sensorDead = false;
+    newSensorData = true;
+  }
+
+  if (strcmp(topic, MQTT_UPDATE_CMD_TOPIC)==0 ) {
     Serial.println("Starting update process...");
     // Start update if a 1 was received as first character
     if ((char)payload[0] == '1') {
@@ -48,11 +55,17 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length) {
     }
   }
 
-  if ( strcmp(topic, MQTT_SEND_MESSAGE_TOPIC) == 0) {
+  if (strcmp(topic, MQTT_SEND_MESSAGE_TOPIC) == 0) {
     Serial.println("incoming message received:");
     Serial.println(value);
     logStatusMessage(value, false);
   }
+
+    if (strcmp(topic, MQTT_BUZZER_CONFIG_TOPIC) == 0) {
+    Serial.println("buzzer config via mqtt:");
+    Serial.println(value);
+  }
+
 }
 
 void reconnect() {
@@ -66,6 +79,7 @@ void reconnect() {
         Serial.print(".");
       }
       Serial.println("Connected to AP");
+      logStatusMessage("MQTT lost");
     }
     Serial.print("Connecting to MQTT node...");
     // Attempt to connect (clientId, username, password)
@@ -78,16 +92,22 @@ void reconnect() {
       Serial.println(MQTT_SEND_MESSAGE_TOPIC);
       Serial.println(MQTT_TEMPERATURE_SENSOR_TOPIC);
       Serial.println(MQTT_HUMIDITY_SENSOR_TOPIC);
+      Serial.println(MQTT_CO2_SENSOR_TOPIC);
+      Serial.println(MQTT_BUZZER_CONFIG_TOPIC);
       Serial.println("... done");
 
       client.subscribe(MQTT_GENERAL_CMD_TOPIC);
       client.subscribe(MQTT_UPDATE_CMD_TOPIC);
       client.subscribe(MQTT_TEMPERATURE_SENSOR_TOPIC);
       client.subscribe(MQTT_HUMIDITY_SENSOR_TOPIC);
+      client.subscribe(MQTT_CO2_SENSOR_TOPIC);
       client.subscribe(MQTT_SEND_MESSAGE_TOPIC);
+      client.subscribe(MQTT_BUZZER_CONFIG_TOPIC);
       //client.subscribe();
 
       client.publish(MQTT_STATUS_TOPIC, "CONNECTED", true);
+      client.publish(MQTT_STATUS_TOPIC, PROG_VERSION, true);
+      logStatusMessage("MQTT connected");
     } else {
       logStatusMessage("MQTT Fail, retrying...");
       Serial.print( "[FAILED] [ rc = " );

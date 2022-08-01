@@ -240,7 +240,7 @@ int fetchOpenWeatherData(uint32_t loc_id, const char *units, const char *appid,
   JsonObject filter_list_0_weather_0 = filter_list_0["weather"].createNestedObject();
   JsonObject filter_city = filter.createNestedObject("city");
   char url[128];
-  
+
   filter_list_0["dt"] = true;
 
   filter_list_0_main["temp"] = true;
@@ -249,9 +249,9 @@ int fetchOpenWeatherData(uint32_t loc_id, const char *units, const char *appid,
 
   filter_list_0_weather_0["id"] = true;
   filter_list_0_weather_0["icon"] = true; // FIXME: do we need this?
-  
+
   filter_list_0["wind"]["speed"] = true;
-  
+
   filter_city["name"] = true;
   filter_city["coord"] = true;
   filter_city["timezone"] = true;
@@ -264,7 +264,7 @@ int fetchOpenWeatherData(uint32_t loc_id, const char *units, const char *appid,
   snprintf(url, 128, "http://api.openweathermap.org/data/2.5/forecast?id=%u&units=%s&appid=%s",
 	   loc_id, units, appid);
 
-  
+
   // Allocate the largest possible document (platform dependent)
   // DynamicJsonDocument doc(ESP.getMaxFreeBlockSize());
   DynamicJsonDocument doc(8192);

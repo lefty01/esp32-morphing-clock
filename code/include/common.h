@@ -11,6 +11,8 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 
+extern const char* PROG_VERSION;
+
 #ifdef MQTT_USE_SSL
 extern WiFiClientSecure wifiClient;
 #else
@@ -57,6 +59,7 @@ extern bool sensorDead;
 //The actual sensor data
 extern float sensorTemp;
 extern int sensorHumi;
+extern int sensorCo2Mqtt;
 
 // 5-day forecast ids/icons (https://openweathermap.org/weather-conditions)
 struct forecast_info {
