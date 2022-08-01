@@ -44,7 +44,7 @@ void displayClock() {
     }
     else {
       // epoch changes every miliseconds, we only want to draw when digits actually change.
-      if (ss!=prevss) { 
+      if (ss!=prevss) {
         int s0 = ss % 10;
         int s1 = ss / 10;
         if (s0!=digit0.Value()) digit0.Morph(s0);
@@ -60,7 +60,7 @@ void displayClock() {
         displayDate();
         prevmm = mm;
       }
-      
+
       if (hh!=prevhh) {
         int h0 = hh % 10;
         int h1 = hh / 10;
@@ -72,6 +72,9 @@ void displayClock() {
 }
 
 void displayDate() {
+    //Serial.printf("DOW_X %d, DOW_Y %d, DATE_WIDTH %d, DATE_HEIGHT %d\n", DOW_X, DOW_Y, DATE_WIDTH, DATE_HEIGHT);
+    //DOW_X 30, DOW_Y 0, DATE_WIDTH 40, DATE_HEIGHT 18
+
     dma_display->fillRect(DOW_X, DOW_Y, DATE_WIDTH, DATE_HEIGHT, 0);
 
     dma_display->setTextSize(1);     // size 1 == 8 pixels high
@@ -82,5 +85,9 @@ void displayDate() {
     dma_display->print(&timeinfo, "%a");
 
     dma_display->setCursor(DATE_X, DATE_Y);
-    dma_display->print(&timeinfo, "%d.%m");
+    dma_display->print(&timeinfo, "%d.%m.");
+
+    // fixme: for some reason the minute update clear the col 0 of the sensor data (temp),
+    // this call fixes the symptom ... but I don't know why we have that problem in the first place
+    displayWeatherData(my_weather);
 }

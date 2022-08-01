@@ -106,7 +106,7 @@ void reconnect() {
       //client.subscribe();
 
       client.publish(MQTT_STATUS_TOPIC, "CONNECTED", true);
-      client.publish(MQTT_STATUS_TOPIC, PROG_VERSION);
+      client.publish(MQTT_STATUS_TOPIC, PROG_VERSION, true);
       logStatusMessage("MQTT connected");
     } else {
       logStatusMessage("MQTT Fail, retrying...");

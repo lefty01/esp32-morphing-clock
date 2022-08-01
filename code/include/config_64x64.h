@@ -15,7 +15,7 @@
 #define CLOCK_HEIGHT 2*CLOCK_SEGMENT_HEIGHT+3
 
 // Day of week
-#define DOW_X ((PANEL_WIDTH / 2) - 1)
+#define DOW_X ((PANEL_WIDTH / 2) - 2)
 #define DOW_Y 0
 
 // Date
@@ -30,8 +30,8 @@
 // Weather sensor data
 #define SENSOR_DATA_X 0
 #define SENSOR_DATA_Y 0
-#define SENSOR_DATA_WIDTH ((PANEL_WIDTH / 2) - 1) // FIXME
-#define SENSOR_DATA_HEIGHT 6
+#define SENSOR_DATA_WIDTH ((PANEL_WIDTH / 2) - 2) // FIXME
+#define SENSOR_DATA_HEIGHT 18
 
 // Light sensor data
 #define LIGHT_DATA_X 0

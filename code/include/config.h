@@ -17,6 +17,7 @@
 #define MQTT_STATUS_TOPIC             MQTT_CLIENT_ID "/state"
 #define MQTT_GENERAL_CMD_TOPIC        MQTT_CLIENT_ID "/cmd"
 #define MQTT_UPDATE_CMD_TOPIC         MQTT_CLIENT_ID "/cmd/update"
+//#define MQTT_VERSION_CMD_TOPIC        MQTT_CLIENT_ID "/cmd/version"
 #define MQTT_SEND_MESSAGE_TOPIC       MQTT_CLIENT_ID "/message/send"
 #define MQTT_BUZZER_CONFIG_TOPIC      MQTT_CLIENT_ID "/buzzer/config"
 

@@ -151,7 +151,7 @@ void loop() {
     logStatusMessage("Yess... push it again!!");
   }
 
-  //Do we need to clear the status message from the screen?
+  // Do we need to clear the status message from the screen?
   if (logMessageActive) {
     if (millis() > messageDisplayMillis + LOG_MESSAGE_PERSISTENCE_MSEC) {
       clearStatusMessage();
@@ -168,7 +168,7 @@ void loop() {
   }
 
   // Is the sensor data too old?
-  if (millis() - lastSensorRead > 1000*SENSOR_DEAD_INTERVAL_SEC) { // TODO: via ticker!?
+  if ((millis() - lastSensorRead) > 1000 * SENSOR_DEAD_INTERVAL_SEC) { // TODO: via ticker!?
     sensorDead = true;
     //displaySensorData();FIXME position
   }

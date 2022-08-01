@@ -270,7 +270,7 @@ void Digit::Morph1() {
 
     // Move F left to right
     drawLine(0 + i - 1, segHeight * 2 + 1, 0 + i - 1, segHeight + 2, black);
-    drawLine(0 + i, segHeight * 2 + 1, 0 + i, segHeight + 2, _color);
+    drawLine(0 + i,     segHeight * 2 + 1, 0 + i,     segHeight + 2, _color);
 
     // Gradually Erase A, G, D
     drawPixel(1 + i, segHeight * 2 + 2, black); // A
