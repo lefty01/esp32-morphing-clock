@@ -23,6 +23,8 @@
 // How often we refresh the time from the NTP server
 #define NTP_REFRESH_INTERVAL_SEC 3600
 #define NTP_SERVER "europe.pool.ntp.org"
+// https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv
+#define NTP_MY_TIMEZONE "CET-1CEST,M3.5.0,M10.5.0/3"
 
 // Timezone difference from GMT, expressed in seconds
 #define TIMEZONE_DELTA_SEC 7200

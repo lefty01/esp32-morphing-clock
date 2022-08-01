@@ -27,6 +27,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "clock.h"
 #include "weather.h"
 #include "buzzer.h"
+#include "time.h"
 
 #define EVERY_SECOND     1000
 #define EVERY_MINUTE     EVERY_SECOND * 60
