@@ -111,16 +111,12 @@ void displayLightData(float luxValue) {
   dma_display->setTextSize(1);     // size 1 == 8 pixels high
   dma_display->setTextWrap(false); // Don't wrap at end of line - will do ourselves
   dma_display->setTextColor(SENSOR_DATA_COLOR);
-  //    dma_display->setFont(&FreeSerifBold12pt7b);
-
   dma_display->setCursor(LIGHT_DATA_X, LIGHT_DATA_Y);
   dma_display->printf("%4.1f lx", luxValue);
-
-
 }
 
-// FIXME: for now this is showing static info
-//        getting the first item (+3h) from forecast info and show temp and humidity
+
+// getting the first item (+3h) from forecast info and show temp and humidity
 void displayWeatherData(const struct city_info &info) {
   Serial.printf("displayWeatherData: temp=%2.1f, humi=%d\n",
 		info.forecasts[0].temp, info.forecasts[0].humidity);
@@ -136,9 +132,12 @@ void displayWeatherData(const struct city_info &info) {
   dma_display->printf("%2.1f", info.forecasts[0].temp);
   dma_display->setCursor(SENSOR_DATA_X, SENSOR_DATA_Y + 8);
   dma_display->printf("%3d%%", info.forecasts[0].humidity);
-
   // Draw the degree symbol manually
-  //dma_display->fillRect(SENSOR_DATA_X + 25, SENSOR_DATA_Y, 2, 2, SENSOR_DATA_COLOR);
+  dma_display->fillRect(SENSOR_DATA_X + 25, SENSOR_DATA_Y, 2, 2, SENSOR_DATA_COLOR);
+
+}
+
+void displayForecastData() {
 
 }
 

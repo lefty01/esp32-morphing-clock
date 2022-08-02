@@ -30,8 +30,9 @@ extern HTTPClient http;
 //Time of last status update
 extern unsigned long lastStatusSend;
 
-//Time of last client.loop()
+//Time of last sensor events
 extern unsigned long lastSensorRead;
+extern unsigned long lastLightRead;
 extern unsigned long lastLedBlink;
 
 //Log message persistence
@@ -89,4 +90,10 @@ extern Adafruit_TSL2591 tsl;
 String epoch2String(unsigned long);
 String epoch2HHMM(unsigned long);
 
+//Weather data
+extern uint8_t forecast5Days[5];
+extern int8_t minTempToday;
+extern int8_t maxTempToday;
+
 #endif
+

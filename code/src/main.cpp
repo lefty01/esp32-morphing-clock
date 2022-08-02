@@ -17,6 +17,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
 #include <Ticker.h>
+#include <esp_task_wdt.h>
 
 #include "config.h"
 #include "main.h"
@@ -38,12 +39,10 @@ Ticker displayTicker;
 //Ticker weatherUpdateTicker;
 unsigned long prevEpoch;
 unsigned long lastNTPUpdate;
-unsigned long sw_timer_10min;
+unsigned long lastWeatherUpdate;
 
-
-//Just a blinking minion...
+//Just a blinking heart to show the main thread is still alive...
 bool blinkOn;
-
 
 void setup(){
   display_init();
@@ -75,25 +74,44 @@ void setup(){
   lastNTPUpdate = millis();
   logStatusMessage("NTP done!");
 
+  delay(500);
   logStatusMessage("MQTT connect...");
   #ifdef MQTT_USE_SSL
   wifiClient.setCACert(server_crt_str);
   wifiClient.setCertificate(client_crt_str);
   wifiClient.setPrivateKey(client_key_str);
   #endif
+
   client.setServer( MQTT_SERVER, MQTT_PORT );
   client.setCallback(mqtt_callback);
   reconnect();
   lastStatusSend = 0;
   logStatusMessage("MQTT done!");
 
+  delay(500);
   logStatusMessage("Initialize TSL...");
   tslConfigureSensor();
   logStatusMessage("TSL done!");
 
+  logStatusMessage("Setting up watchdog...");
+  esp_task_wdt_init(WDT_TIMEOUT, true);
+  esp_task_wdt_add(NULL);
+  logStatusMessage("Woof!");
+
   //logStatusMessage(WiFi.localIP().toString());
-  fetchOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, &my_weather);
+  logStatusMessage("Getting weather...");
+#ifndef WEATHER_API_PROVIDER
+  #error "***** ATTENTION NO WEATHER_API_PROVIDER DEFINED ******"
+#elif WEATHER_API_PROVIDER == OPENWEATHERMAP
+  getOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, &my_weather);
   displayWeatherData(my_weather);
+#elif WEATHER_API_PROVIDER == ACCUWEATHER
+  getAccuWeatherData();
+#else
+  #error "Unexpected value for WEATHER_API_PROVIDER defined!"
+#endif
+  logStatusMessage("Weather recvd!");
+  lastWeatherUpdate = millis();
 
   // DEBUG ...
   for (int i = 0; i < 5; ++i) {
@@ -107,12 +125,12 @@ void setup(){
   Serial.println(my_weather.timezone);
   Serial.println(my_weather.sunrise);
   Serial.println(my_weather.sunset);
+
   //draw5DayForecast(forecasts, 5);
   drawTestBitmap();
 
   displayTicker.attach_ms(30, displayUpdater);
   //sensorDataTicker.attach_ms(60 * 1000, sensorUpdater);
-
   buzzer_tone(1000, 300);
 }
 
@@ -130,21 +148,34 @@ void loop() {
   client.loop();
 
   // Periodically refresh NTP time
-  if (millis() - lastNTPUpdate > (1000 * NTP_REFRESH_INTERVAL_SEC)) {
+  if ((millis() - lastNTPUpdate) > (1000 * NTP_REFRESH_INTERVAL_SEC)) {
     logStatusMessage("NTP Refresh");
     configTime(TIMEZONE_DELTA_SEC, TIMEZONE_DST_SEC, NTP_SERVER);
     lastNTPUpdate = millis();
   }
 
-  // 10 minute timer, get weather update
-  if ((millis() - sw_timer_10min) > EVERY_10_MINUTES) {
-    sw_timer_10min = millis();
-    fetchOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, &my_weather);
+  // Periodically refresh weather forecast
+  if ((millis() - lastWeatherUpdate) > (1000 * WEATHER_REFRESH_INTERVAL_SEC)) {
+    logStatusMessage("Weather refresh");
+
+    // FIXME: more generic approach to support different weather providers
+    // getWeatherData(void *blob); displayWeatherData();
+#ifndef WEATHER_API_PROVIDER
+  #error "***** ATTENTION NO WEATHER_API_PROVIDER DEFINED ******"
+#elif WEATHER_API_PROVIDER == OPENWEATHERMAP
+    getOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, &my_weather);
     clearForecast();
     clearSensorData();
 
     draw5DayForecastIcons(my_weather.forecasts, 5);
     displayWeatherData(my_weather);
+#elif WEATHER_API_PROVIDER == ACCUWEATHER
+    getAccuWeatherData();
+    displayWeatherData();
+#else
+  #error "Unexpected value for WEATHER_API_PROVIDER defined!"
+#endif
+    lastWeatherUpdate = millis();
   }
 
   if (digitalRead(BUTTON1_PIN) == LOW) {
@@ -153,7 +184,7 @@ void loop() {
 
   // Do we need to clear the status message from the screen?
   if (logMessageActive) {
-    if (millis() > messageDisplayMillis + LOG_MESSAGE_PERSISTENCE_MSEC) {
+    if (millis() > (messageDisplayMillis + LOG_MESSAGE_PERSISTENCE_MSEC)) {
       clearStatusMessage();
       //drawTestBitmap();
       clearForecast();
@@ -165,20 +196,26 @@ void loop() {
   if (newSensorData) {
     //logStatusMessage("Sensor data in");
     //displaySensorData(); FIXME position
+    //displayTodaysWeather();
   }
 
   // Is the sensor data too old?
-  if ((millis() - lastSensorRead) > 1000 * SENSOR_DEAD_INTERVAL_SEC) { // TODO: via ticker!?
+  if ((millis() - lastSensorRead) > (1000 * SENSOR_DEAD_INTERVAL_SEC)) { // TODO: via ticker!?
     sensorDead = true;
     //displaySensorData();FIXME position
   }
 
-  float tslData = tslGetLux();
-  //displayLightData(tslData); FIXME position
 
   heartBeat = !heartBeat;
   //drawHeartBeat(); // TODO: config option heartbeat
 
+  if ((millis() - lastLightRead) > (1000 * LIGHT_READ_INTERVAL_SEC)) {
+    lightUpdate();
+  }
+
+
+  //Reset the watchdog timer as long as the main task is running
+  esp_task_wdt_reset();
   delay(500);
 }
 
@@ -195,8 +232,13 @@ void displayUpdater() {
   }
 }
 
-//void sensorUpdater() {
-//}
+void lightUpdate() {
+  float tslData = tslGetLux();
+  lastLightRead = millis();
+  if ((tslData >= 0) && (tslData <= LIGHT_THRESHOLD)) {
+    displayLightData(tslData);
+  }
+}
 
 //TODO: http://www.rinkydinkelectronics.com/t_imageconverter565.php
 
