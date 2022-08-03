@@ -21,9 +21,9 @@ void update_finished() {
 void update_progress(int cur, int total) {
   Serial.printf("CALLBACK:  HTTP update process at %d of %d bytes...\n", cur, total);
   float percent = ((float)cur / (float)total) * 100;
-  char p[12];  // 'OTA: 100 %'
+  char p[16];  // 'OTA: 100 %'
 
-  snprintf(p, 12, "OTA: %.3d %%", (int)percent);
+  snprintf(p, 16, "OTA: %.3d %%", (int)percent);
 
   logStatusMessage(p);
 }

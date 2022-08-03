@@ -90,11 +90,11 @@ void setup(){
   reconnect();
   lastStatusSend = 0;
   logStatusMessage("MQTT done!");
-
   delay(500);
+
   logStatusMessage("Init light sensor");
   configureLightSensor();
-  logStatusMessage(" done!");
+  delay(500);
 
   logStatusMessage("Setting up watchdog...");
   esp_task_wdt_init(WDT_TIMEOUT, true);

@@ -1,4 +1,5 @@
 Copyright @2021 Bogdan Sass
+Modifications in this fork Copyright @2022 Andreas Loeffler
 
 The files in this directory are part of ESP32 Morphing Clock.
 

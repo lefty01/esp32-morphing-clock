@@ -6,7 +6,7 @@
 BH1750 lightSensor = BH1750();
 #elif LIGHT_SENSOR_TSL2591
 Adafruit_TSL2591 lightSensor = Adafruit_TSL2591(2591);
-#else
+#else /* adding dummy so the getLightData() can stay as is */
 struct LightDummy {
   bool getEvent(sensors_event_t *event) { return false; }
 };
@@ -21,6 +21,7 @@ void configureLightSensor() {
 
   if (lightSensor.begin(BH1750::CONTINUOUS_HIGH_RES_MODE)) {
     Serial.println(F("BH1750 OK"));
+    logStatusMessage("BH1750 OK");
   } else {
     Serial.println(F("Error initialising BH1750"));
     logStatusMessage("BH1750 ERROR");
@@ -39,6 +40,8 @@ void configureLightSensor() {
   //lightSensor.setTiming(TSL2591_INTEGRATIONTIME_400MS);
   //lightSensor.setTiming(TSL2591_INTEGRATIONTIME_500MS);
   //lightSensor.setTiming(TSL2591_INTEGRATIONTIME_600MS);  // longest integration time (dim light)
+#else
+  logStatusMessage("No Light Sensor!");
 #endif
 }
 
