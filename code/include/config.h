@@ -81,8 +81,8 @@
 
 #define LIGHT_DATA_COLOR ((0x00 & 0xF8) << 8) | ((0xFF & 0xFC) << 3) | (0x00 >> 3)
 //Maximum lux value that will be accepted as valid (sometimes the sensor will return erroneous values)
-#define LIGHT_THRESHOLD 9999
-#define LIGHT_READ_INTERVAL_SEC 5
+#define LIGHT_THRESHOLD 54612.5
+#define LIGHT_READ_INTERVAL_SEC 3
 
 // Log messages at the bottom
 #define LOG_MESSAGE_COLOR ((0xFF & 0xF8) << 8) | ((0x00 & 0xFC) << 3) | (0x00 >> 3)

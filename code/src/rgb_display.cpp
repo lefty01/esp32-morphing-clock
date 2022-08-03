@@ -112,7 +112,7 @@ void displayLightData(float luxValue) {
   dma_display->setTextWrap(false); // Don't wrap at end of line - will do ourselves
   dma_display->setTextColor(SENSOR_DATA_COLOR);
   dma_display->setCursor(LIGHT_DATA_X, LIGHT_DATA_Y);
-  dma_display->printf("%4.1f lx", luxValue);
+  dma_display->printf("%4.0f", luxValue);
 }
 
 

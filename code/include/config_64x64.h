@@ -39,7 +39,7 @@
 #define SENSOR_DATA_X 0
 #define SENSOR_DATA_Y 0
 #define SENSOR_DATA_WIDTH ((PANEL_WIDTH / 2) - 2)
-#define SENSOR_DATA_HEIGHT 18
+#define SENSOR_DATA_HEIGHT 16
 
 // ... FIXME: adjust to 64x64 if we want to use it (merged from bogdan)
 // Weather - today, and 5-day forecast

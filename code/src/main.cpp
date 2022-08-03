@@ -52,6 +52,9 @@ void setup(){
 
   pinMode(BUTTON1_PIN, INPUT_PULLUP);
 
+  logStatusMessage(PROG_VERSION);
+  delay(500);
+
   logStatusMessage("Buzzer setup");
   buzzer_init();
   //buzzer_tone(500, 300);
@@ -89,9 +92,9 @@ void setup(){
   logStatusMessage("MQTT done!");
 
   delay(500);
-  logStatusMessage("Initialize TSL...");
-  tslConfigureSensor();
-  logStatusMessage("TSL done!");
+  logStatusMessage("Init light sensor");
+  configureLightSensor();
+  logStatusMessage(" done!");
 
   logStatusMessage("Setting up watchdog...");
   esp_task_wdt_init(WDT_TIMEOUT, true);
@@ -211,6 +214,7 @@ void loop() {
 
   if ((millis() - lastLightRead) > (1000 * LIGHT_READ_INTERVAL_SEC)) {
     lightUpdate();
+    lastLightRead = millis();
   }
 
 
@@ -233,10 +237,10 @@ void displayUpdater() {
 }
 
 void lightUpdate() {
-  float tslData = tslGetLux();
-  lastLightRead = millis();
-  if ((tslData >= 0) && (tslData <= LIGHT_THRESHOLD)) {
-    displayLightData(tslData);
+  float lightData = getLightData();
+
+  if ((lightData >= 0) && (lightData <= LIGHT_THRESHOLD)) {
+    displayLightData(lightData);
   }
 }
 

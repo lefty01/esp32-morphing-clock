@@ -84,7 +84,12 @@ extern struct city_info my_weather;
 extern bool heartBeat;
 
 //Light sensor
-extern Adafruit_TSL2591 tsl;
+#ifdef LIGHT_SENSOR_BH1750
+extern BH1750 lightSensor;
+#elif LIGHT_SENSOR_TSL2591
+extern Adafruit_TSL2591 lightSensor;
+#endif
+
 
 // utility functions
 String epoch2String(unsigned long);
