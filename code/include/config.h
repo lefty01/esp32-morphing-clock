@@ -1,7 +1,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-
 //#define MQTT_USE_SSL 1
 //#define USE_ANDROID_AP 1
 
@@ -39,6 +38,7 @@
 #define SENSOR_DEAD_INTERVAL_SEC 600
 
 // weather api config
+#define WEATHER_API_PROVIDER OPENWEATHERMAP
 #define WEATHER_API_CITY_ID  2947444
 #define WEATHER_API_UNITS    "metric"
 #define WEATHER_API_BASE_URL "http://api.openweathermap.org"
@@ -62,8 +62,6 @@
 #error ***** ATTENTION NO PANEL SIZE DEFINED ******
 #endif
 
-#define MATRIX_WIDTH  PANEL_WIDTH  // used in ESP32-HUB75-MatrixPanel_I2S_DMA.h
-#define MATRIX_HEIGHT PANEL_HEIGHT // used in ESP32-HUB75-MatrixPanel_I2S_DMA.h
 
 #define CLOCK_DIGIT_COLOR  ((0x00 & 0xF8) << 8) | ((0xFF & 0xFC) << 3) | (0xFF >> 3)
 
@@ -82,9 +80,22 @@
 #define SENSOR_ERROR_DATA_COLOR ((0xFF & 0xF8) << 8) | ((0x00 & 0xFC) << 3) | (0x00 >> 3)
 
 #define LIGHT_DATA_COLOR ((0x00 & 0xF8) << 8) | ((0xFF & 0xFC) << 3) | (0x00 >> 3)
+//Maximum lux value that will be accepted as valid (sometimes the sensor will return erroneous values)
+#define LIGHT_THRESHOLD 54612.5
+#define LIGHT_READ_INTERVAL_SEC 3
 
 // Log messages at the bottom
 #define LOG_MESSAGE_COLOR ((0xFF & 0xF8) << 8) | ((0x00 & 0xFC) << 3) | (0x00 >> 3)
+
+// Watchdog settings
+#define WDT_TIMEOUT 300   // If the WDT is not reset within X seconds, reboot the unit
+                          // Do NOT set this too low, or the WDT will prevent OTA updates from completing!!
+
+#define TEMPRANGE_COLOR ((0x00 & 0xF8) << 8) | ((0xFF & 0xFC) << 3) | (0xFF >> 3)
+
+// How often to refresh weather forecast data
+// (limited by API throttling)
+#define WEATHER_REFRESH_INTERVAL_SEC 900
 
 
 #endif

@@ -47,7 +47,7 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length) {
     newSensorData = true;
   }
 
-  if (strcmp(topic, MQTT_UPDATE_CMD_TOPIC)==0 ) {
+  if (strcmp(topic, MQTT_UPDATE_CMD_TOPIC) == 0) {
     Serial.println("Starting update process...");
     // Start update if a 1 was received as first character
     if ((char)payload[0] == '1') {
@@ -59,11 +59,13 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length) {
     Serial.println("incoming message received:");
     Serial.println(value);
     logStatusMessage(value, false);
+    // if (buzzOnMsg) buzzer_tone(1000, 300);
   }
 
-    if (strcmp(topic, MQTT_BUZZER_CONFIG_TOPIC) == 0) {
+  if (strcmp(topic, MQTT_BUZZER_CONFIG_TOPIC) == 0) {
     Serial.println("buzzer config via mqtt:");
     Serial.println(value);
+    // store config.buzzOnMsg = 1/true;
   }
 
 }
