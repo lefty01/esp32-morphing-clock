@@ -89,5 +89,5 @@ void displayDate() {
 
     // fixme: for some reason the minute update clear the col 0 of the sensor data (temp),
     // this call fixes the symptom ... but I don't know why we have that problem in the first place
-    displayWeatherData(my_weather);
+    displayWeatherData(myWeather);
 }

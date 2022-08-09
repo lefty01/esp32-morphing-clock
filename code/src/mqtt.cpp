@@ -26,25 +26,33 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length) {
   Serial.println();
   */
 
+  // fixme: can we do this in a loop for each 'mqtt sesor topic'?
+  //        ... having one array entry per topic
   if (strcmp(topic, MQTT_TEMPERATURE_SENSOR_TOPIC) == 0) {
-    sensorTemp = atof(value);
-    lastSensorRead = millis();
-    sensorDead = false;
-    newSensorData = true;
+      mySensors[1].type = TEMPERATURE;
+      mySensors[1].val_f = atof(value);
+      mySensors[1].lastRead = millis();
+      mySensors[1].isDead = false;
+      mySensors[1].newData = true;
+//    sensorTemp = atof(value);
+//    lastMqttSensorRead = millis();
+//    sensorDead = false;
+//    newMqttSensorData = true;
   }
 
   if (strcmp(topic, MQTT_HUMIDITY_SENSOR_TOPIC) == 0) {
     sensorHumi = atoi(value);
-    lastSensorRead = millis();
+    lastMqttSensorRead = millis();
     sensorDead = false;
-    newSensorData = true;
+    newMqttSensorData = true;
   }
 
   if (strcmp(topic, MQTT_CO2_SENSOR_TOPIC) == 0) {
-    sensorCo2Mqtt = atoi(value);
-    lastSensorRead = millis();
-    sensorDead = false;
-    newSensorData = true;
+      mySensors[0].type = CO2;
+      mySensors[0].val_i = atoi(value);
+      mySensors[0].lastRead = millis();
+      mySensors[0].isDead = false;
+      mySensors[0].newData = true;
   }
 
   if (strcmp(topic, MQTT_UPDATE_CMD_TOPIC) == 0) {
@@ -62,10 +70,22 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length) {
     // if (buzzOnMsg) buzzer_tone(1000, 300);
   }
 
-  if (strcmp(topic, MQTT_BUZZER_CONFIG_TOPIC) == 0) {
+  if (strcmp(topic, MQTT_CONFIG_BUZZER_TOPIC) == 0) {
     Serial.println("buzzer config via mqtt:");
     Serial.println(value);
     // store config.buzzOnMsg = 1/true;
+    if ((char)payload[0] == '1') {
+      //enable_buzzer();
+    }
+    else if ((char)payload[0] == '0') {
+      //disable_buzzer();
+    }
+  }
+
+  if (strcmp(topic, MQTT_CONFIG_BRIGHTNESS_TOPIC) == 0) {
+    Serial.print("config brightness via mqtt: ");
+    Serial.println(value);
+
   }
 
 }
@@ -95,7 +115,8 @@ void reconnect() {
       Serial.println(MQTT_TEMPERATURE_SENSOR_TOPIC);
       Serial.println(MQTT_HUMIDITY_SENSOR_TOPIC);
       Serial.println(MQTT_CO2_SENSOR_TOPIC);
-      Serial.println(MQTT_BUZZER_CONFIG_TOPIC);
+      Serial.println(MQTT_CONFIG_BUZZER_TOPIC);
+      Serial.println(MQTT_CONFIG_BRIGHTNESS_TOPIC);
       Serial.println("... done");
 
       client.subscribe(MQTT_GENERAL_CMD_TOPIC);
@@ -104,7 +125,8 @@ void reconnect() {
       client.subscribe(MQTT_HUMIDITY_SENSOR_TOPIC);
       client.subscribe(MQTT_CO2_SENSOR_TOPIC);
       client.subscribe(MQTT_SEND_MESSAGE_TOPIC);
-      client.subscribe(MQTT_BUZZER_CONFIG_TOPIC);
+      client.subscribe(MQTT_CONFIG_BUZZER_TOPIC);
+      client.subscribe(MQTT_CONFIG_BRIGHTNESS_TOPIC);
       //client.subscribe();
 
       client.publish(MQTT_STATUS_TOPIC, "CONNECTED", true);

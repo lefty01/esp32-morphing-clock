@@ -1,9 +1,12 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <array>
+
 #include "config.h"
 #include "rgb_display.h"
 #include "light_sensor.h"
+#include "temp_pressure_sensor.h"
 
 #include <WiFi.h>
 #include <PubSubClient.h>
@@ -31,9 +34,10 @@ extern HTTPClient http;
 extern unsigned long lastStatusSend;
 
 //Time of last sensor events
-extern unsigned long lastSensorRead;
-extern unsigned long lastLightRead;
+extern unsigned long lastI2cSensorRead;
 extern unsigned long lastLedBlink;
+extern unsigned long lastMqttSensorRead;
+extern unsigned long lastMqttSensorShow;
 
 //Log message persistence
 //Is a log message currently displayed?
@@ -53,8 +57,9 @@ extern MatrixPanel_I2S_DMA *dma_display;
 extern struct tm timeinfo;
 
 //Flags to trigger display section updates
+// fixme: differentiate between external (mqtt) and internal (i2c) sensors
 extern bool clockStartingUp;
-extern bool newSensorData;
+extern bool newMqttSensorData;
 extern bool sensorDead;
 
 //The actual sensor data
@@ -67,7 +72,10 @@ struct forecast_info {
   long time;
   int condition;
   float temp;
+  float temp_min;
+  float temp_max;
   int pressure;
+  int grnd_level;
   int humidity;
   float wind;
 };
@@ -77,8 +85,8 @@ struct city_info {
   long sunset;
   struct forecast_info forecasts[5];
 };
-//extern struct forecast_info forecasts[5];
-extern struct city_info my_weather;
+
+extern struct city_info myWeather;
 
 //Just a heartbeat for the watchdog...
 extern bool heartBeat;
@@ -90,6 +98,35 @@ extern BH1750 lightSensor;
 extern Adafruit_TSL2591 lightSensor;
 #endif
 
+// map sensors in the array to some name or Id !?
+enum SensorId {
+  CO2_HOME1 = 0, // at my desk
+  
+};
+
+enum SensorType {
+  TEMPERATURE = 0, /* degree celcius             */
+  HUMIDITY,        /* (rel) percentage           */
+  PRESSURE,        /* barometric pressure in Pa. */
+  LIGHT,           /* light level in lux         */
+  CO2              /* co2 level ppm              */
+};
+
+struct MqttSensor
+{
+  SensorType type;
+  unsigned long lastRead;  // millis() timestamp
+  bool newData;            // mqtt data received
+  bool isDead;             // no new data within SENSOR_DEAD_INTERVAL_SEC
+
+  union {
+    int   val_i;
+    float val_f;
+  };
+};
+typedef std::array<MqttSensor, NUM_MQTT_SENSORS> MqttSensors;
+
+extern MqttSensors mySensors;
 
 // utility functions
 String epoch2String(unsigned long);

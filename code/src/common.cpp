@@ -21,11 +21,12 @@ unsigned long lastStatusSend = 0;
 
 //Time of last client.loop()
 unsigned long lastLoop = 0;
-//Time of last weather sensor data receive
-unsigned long lastSensorRead = 0;
 //Time of last light sensor read
-unsigned long lastLightRead = 0;
-
+unsigned long lastI2cSensorRead = 0;
+//Time of last mqtt (weather) sensor data receive
+unsigned long lastMqttSensorRead = 0;
+// Time of last mqtt sensor data display update
+unsigned long lastMqttSensorShow = 0;
 
 // NTP
 const int8_t timeZone = 2;
@@ -39,7 +40,7 @@ MatrixPanel_I2S_DMA *dma_display = nullptr;
 
 // Flags to trigger display updates
 bool clockStartingUp = true;
-bool newSensorData = false;
+bool newMqttSensorData = false;
 bool sensorDead = true;
 
 //Heartbeat marker
@@ -59,7 +60,10 @@ int sensorCo2Mqtt;
 
 // 5-day forecast ids/icons (https://openweathermap.org/weather-conditions)
 //struct forecast_info forecasts[5];
-struct city_info my_weather;
+struct city_info myWeather;
+
+// NUM_MQTT_SENSORS sensors
+MqttSensors mySensors;
 
 String epoch2String(unsigned long t) {
   char buf[32];

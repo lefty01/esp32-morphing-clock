@@ -8,17 +8,20 @@
 #define MQTT_HOSTNAME "esp32-morphclock"
 #define MQTT_CLIENT_ID MQTT_HOSTNAME
 #define MQTT_REPORT_INTERVAL_MILLIS 30000
+#define MQTT_SENSOR_DISPLAY_INTERVALL_SEC 10
 
 // MQTT Topics
 #define MQTT_TEMPERATURE_SENSOR_TOPIC MQTT_CLIENT_ID "/sensor/temperature"
 #define MQTT_HUMIDITY_SENSOR_TOPIC    MQTT_CLIENT_ID "/sensor/humidity"
-#define MQTT_CO2_SENSOR_TOPIC         MQTT_CLIENT_ID "/co2_ampel1/co2ppm"
+//#define MQTT_CO2_SENSOR_TOPIC         MQTT_CLIENT_ID "/co2_ampel1/co2ppm"
+#define MQTT_CO2_SENSOR_TOPIC         "co2_ampel_7448/co2ppm"
 #define MQTT_STATUS_TOPIC             MQTT_CLIENT_ID "/state"
 #define MQTT_GENERAL_CMD_TOPIC        MQTT_CLIENT_ID "/cmd"
 #define MQTT_UPDATE_CMD_TOPIC         MQTT_CLIENT_ID "/cmd/update"
 //#define MQTT_VERSION_CMD_TOPIC        MQTT_CLIENT_ID "/cmd/version"
 #define MQTT_SEND_MESSAGE_TOPIC       MQTT_CLIENT_ID "/message/send"
-#define MQTT_BUZZER_CONFIG_TOPIC      MQTT_CLIENT_ID "/buzzer/config"
+#define MQTT_CONFIG_BUZZER_TOPIC      MQTT_CLIENT_ID "/config/buzzer"
+#define MQTT_CONFIG_BRIGHTNESS_TOPIC  MQTT_CLIENT_ID "/config/brightness"
 
 // How often we refresh the time from the NTP server
 #define NTP_REFRESH_INTERVAL_SEC 3600
@@ -82,7 +85,7 @@
 #define LIGHT_DATA_COLOR ((0x00 & 0xF8) << 8) | ((0xFF & 0xFC) << 3) | (0x00 >> 3)
 //Maximum lux value that will be accepted as valid (sometimes the sensor will return erroneous values)
 #define LIGHT_THRESHOLD 54612.5
-#define LIGHT_READ_INTERVAL_SEC 3
+#define I2C_READ_INTERVAL_SEC 5
 
 // Log messages at the bottom
 #define LOG_MESSAGE_COLOR ((0xFF & 0xF8) << 8) | ((0x00 & 0xFC) << 3) | (0x00 >> 3)
@@ -96,6 +99,9 @@
 // How often to refresh weather forecast data
 // (limited by API throttling)
 #define WEATHER_REFRESH_INTERVAL_SEC 900
+
+// number of mqtt sensor readings
+#define NUM_MQTT_SENSORS 3
 
 
 #endif
