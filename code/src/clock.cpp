@@ -28,6 +28,7 @@ void displayClock() {
     int hh = timeinfo.tm_hour;
     int mm = timeinfo.tm_min;
     int ss = timeinfo.tm_sec;
+    Serial.printf("%d:%d:%d\n", hh, mm, ss);
     delay(500);
 
     if (clockStartingUp) { // If we didn't have a previous time. Just draw it without morphing.
@@ -89,5 +90,5 @@ void displayDate() {
 
     // fixme: for some reason the minute update clear the col 0 of the sensor data (temp),
     // this call fixes the symptom ... but I don't know why we have that problem in the first place
-    displayWeatherData(my_weather);
+    displayWeatherData(myWeather);
 }

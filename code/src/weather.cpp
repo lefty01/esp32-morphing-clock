@@ -283,52 +283,50 @@ int accuWeatherIconMapping(int icon) {
   if (icon <= 32) return 2;
   return 0;
 }
-
+// FIXME: pressure overwrite old value ... clear area.
 
 /* Start of code to get data from openweathermap - based on work by https://github.com/lefty01
 */
 int getOpenWeatherData(uint32_t loc_id, const char *units, const char *appid,
-			 struct city_info *info)
+                       struct city_info *info)
 {
-  StaticJsonDocument<304> filter;
+  StaticJsonDocument<272> filter;
+  filter["city"] = true;
+
   JsonObject filter_list_0 = filter["list"].createNestedObject();
-  JsonObject filter_list_0_main = filter_list_0.createNestedObject("main");
-  JsonObject filter_list_0_weather_0 = filter_list_0["weather"].createNestedObject();
-  JsonObject filter_city = filter.createNestedObject("city");
-  char url[128];
-
   filter_list_0["dt"] = true;
-
-  filter_list_0_main["temp"] = true;
-  filter_list_0_main["pressure"] = true;
-  filter_list_0_main["humidity"] = true;
-
-  filter_list_0_weather_0["id"] = true;
-  filter_list_0_weather_0["icon"] = true; // FIXME: do we need this?
-
   filter_list_0["wind"]["speed"] = true;
 
-  filter_city["name"] = true;
-  filter_city["coord"] = true;
-  filter_city["timezone"] = true;
-  filter_city["sunrise"] = true;
-  filter_city["sunset"] = true;
+  JsonObject filter_list_0_weather_0 = filter_list_0["weather"].createNestedObject();
+  filter_list_0_weather_0["icon"] = true;
+  filter_list_0_weather_0["id"] = true;
+
+  JsonObject filter_list_0_main = filter_list_0.createNestedObject("main");
+  filter_list_0_main["temp"] = true;
+  filter_list_0_main["temp_min"] = true;
+  filter_list_0_main["temp_max"] = true;
+  filter_list_0_main["pressure"] = true;   // Atmospheric pressure on the sea level, hPa
+  filter_list_0_main["grnd_level"] = true; // Atmospheric pressure on the ground level, hPa
+  filter_list_0_main["humidity"] = true;
+
+  char url[128];
 
   // sanity check units ...
   // strcmp(units, "standard") ... "metric", or "imperial"
   snprintf(url, 128, "http://api.openweathermap.org/data/2.5/forecast?id=%u&units=%s&appid=%s",
-	   loc_id, units, appid);
+           loc_id, units, appid);
 
   // Allocate the largest possible document (platform dependent)
   // DynamicJsonDocument doc(ESP.getMaxFreeBlockSize());
-  DynamicJsonDocument doc(8192);
+  //DynamicJsonDocument doc(8192);
+  DynamicJsonDocument doc(12288);
 
   http.useHTTP10(true);
   http.begin(url);
   http.GET();
 
   DeserializationError error = deserializeJson(doc, http.getStream(),
-					       DeserializationOption::Filter(filter));
+                                               DeserializationOption::Filter(filter));
   if (error) {
     Serial.print(F("deserializeJson() failed: "));
     Serial.println(error.f_str());
@@ -348,31 +346,41 @@ int getOpenWeatherData(uint32_t loc_id, const char *units, const char *appid,
   for (JsonObject elem : doc["list"].as<JsonArray>()) {
     long dt           = elem["dt"]; // timestamp epoch
     JsonObject main   = elem["main"];
-    float main_temp   = main["temp"]; // eg. 26.12, ...       degree Celsius
-    int main_pressure = main["pressure"]; // eg. 1014, ...    hPa
-    int main_humidity = main["humidity"]; // eg. 76,   ...    Humidity, %
-    float wind_speed  = elem["wind"]["speed"]; // eg.  ...    m/s
-    int weather_0_id  = elem["weather"][0]["id"]; // eg. ...  condition status
+
+    float main_temp     = main["temp"]; // eg. 26.12, ...       degree Celsius
+    float main_temp_min = main["temp_min"]; // 22.76, 17.26, ...
+    float main_temp_max = main["temp_max"]; // 26.26, 20.84, ...
+    int main_pressure   = main["pressure"]; // eg. 1014, ...    hPa
+    int main_grnd_level = main["grnd_level"]; // 969, 970, ...
+    int main_humidity   = main["humidity"]; // eg. 76,   ...    Humidity, %
+    float wind_speed    = elem["wind"]["speed"]; // eg.  ...    m/s
+    int weather_0_id    = elem["weather"][0]["id"]; // eg. ...  condition status
     const char* weather_0_icon = elem["weather"][0]["icon"];  // eg. "03d", "04d"
 
-    // Serial.println(F("-------------------------------------------------"));
-    // Serial.printf("forecast No. %d\n", n);
-    // Serial.println(dt);
-    // Serial.println(epoch2String(dt));
-    // Serial.println(weather_0_id);
-    // Serial.println(weather_0_icon);
-    // Serial.println(main_temp);
-    // Serial.println(main_pressure);
-    // Serial.println(main_humidity);
-    // Serial.println(wind_speed);
+    Serial.println(F("-------------------------------------------------"));
+    Serial.printf("forecast No. %d\n", n);
+    Serial.println(dt);
+    Serial.println(epoch2String(dt));
+    Serial.println(weather_0_id);
+    Serial.println(weather_0_icon);
+    Serial.println(main_temp);
+    Serial.println(main_temp_min);
+    Serial.println(main_temp_max);
+    Serial.println(main_pressure);
+    Serial.println(main_grnd_level);
+    Serial.println(main_humidity);
+    Serial.println(wind_speed);
 
     if (n < 5) { // FIXME: look at specific time window and get one id for every day
-      info->forecasts[n].condition = weather_0_id; // forecasts[n]->condition ?? ptr
-      info->forecasts[n].temp      = main_temp;
-      info->forecasts[n].pressure  = main_pressure;
-      info->forecasts[n].humidity  = main_humidity;
-      info->forecasts[n].wind      = wind_speed;
-      info->forecasts[n].time      = dt;
+      info->forecasts[n].condition  = weather_0_id; // forecasts[n]->condition ?? ptr
+      info->forecasts[n].temp       = main_temp;
+      info->forecasts[n].temp_min   = main_temp_min;
+      info->forecasts[n].temp_max   = main_temp_max;
+      info->forecasts[n].pressure   = main_pressure;
+      info->forecasts[n].grnd_level = main_grnd_level;
+      info->forecasts[n].humidity   = main_humidity;
+      info->forecasts[n].wind       = wind_speed;
+      info->forecasts[n].time       = dt;
     }
     n++;
     // if (n > (5 * 3))

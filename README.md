@@ -53,8 +53,43 @@ https://api.openweathermap.org/data/2.5/forecast?q=Boeblingen,de&units=metric&&a
 
 The query string could contain cnt=N param to limit output list, but cnt=2 would mean get +3 and +6 hour forcast for today, looks there is no 'one-item-per-day' filter in the api.
 
+#### ArduinJson
 We use ArduinJson to parse the response as a stream directly after submitting the api request. Some ArduinoJson filtering is applied to further reduce the returned data.
 
+##### ArduinJson Filter (example)
+More info here: https://arduinojson.org/v6/example/filter/
+
+Assistant:
+
+https://arduinojson.org/v6/assistant/#
+
+```
+{
+  "city": true,
+  "list": [
+    {
+      "dt": true,
+      "weather": [
+        {
+          "icon": true,
+          "id": true
+        }
+      ],
+      "wind": {
+        "speed": true
+      },
+      "main": {
+        "temp": true,
+        "temp_min": true,
+        "temp_max": true,
+        "pressure": true,
+        "grnd_level": true,
+        "humidity": true
+      }
+    }
+  ]
+}
+```
 
 ## Issues
 * the "middle" row of the clock digigts is somehow "mirrowed" at the top row, so it is slightly visible but not very bight.

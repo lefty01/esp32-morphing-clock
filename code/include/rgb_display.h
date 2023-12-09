@@ -1,7 +1,11 @@
 #ifndef RGB_DISPLAY_H
 #define RGB_DISPLAY_H
 
+
 #include "config.h"
+//#include "common.h"
+//struct MqttSensor;
+//typedef std::array<MqttSensor, NUM_MQTT_SENSORS> MqttSensors;
 
 /* Custom board
 #define R1_PIN 25

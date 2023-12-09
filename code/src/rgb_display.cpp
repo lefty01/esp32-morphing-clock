@@ -77,7 +77,45 @@ void clearSensorData() {
 			SENSOR_DATA_WIDTH, SENSOR_DATA_HEIGHT, 0);
 }
 
+
+//void displaySensorData(const MqttSensors &s) {
+// todo: right now on my 64x64 I have space for three sensor values in the
+//       top-left corner of the display. so if more values are to be displayed
+//       then cycle through them on each call of displaySensorData
 void displaySensorData() {
+  //static int cycle = 0;
+  Serial.printf("number of sensors: %d\n", mySensors.size());
+
+  for (size_t i = 0; i < mySensors.size(); ++i) {
+    Serial.printf("[%d] type of sensors: %d\n", i, mySensors[i].type);
+    Serial.printf("[%d] is dead?:        %d\n", i, mySensors[i].isDead);
+      // float or int? depend on type? or use extra flag
+    if (!mySensors[i].isDead) {
+      Serial.printf("[%d] value int:     %d\n", i, mySensors[i].val_i);
+      Serial.printf("[%d] value float:   %f\n", i, mySensors[i].val_f);
+    }
+    //
+    //
+    //mySensors[i].newData = false;
+    //}
+  }
+  // for (int i; i = 0; ++i) {
+  //   int val = s[i].val_i;
+  // }
+/* void do_something(struct MqttSensor *s) */
+/* { */
+/*   switch(s->type) */
+/*   { */
+/*     case TEMPERATURE:  // do something with s->val_f */
+/*       break; */
+/*     case HUMIDITY:  // do something with s->val_i */
+/*       break; */
+/*     case CO2:  // do something with s->val_i */
+/*       break; */
+/*   } */
+/* } */
+
+#if 0
   if (sensorDead) {
     dma_display->fillRect(SENSOR_DATA_X, SENSOR_DATA_Y, SENSOR_DATA_WIDTH, SENSOR_DATA_HEIGHT, 0);
     dma_display->setTextSize(1);     // size 1 == 8 pixels high
@@ -88,7 +126,7 @@ void displaySensorData() {
     dma_display->print("No sensor data!");
   }
 
-  if (newSensorData) {
+  if (newMqttSensorData) {
     dma_display->fillRect(SENSOR_DATA_X, SENSOR_DATA_Y, SENSOR_DATA_WIDTH, SENSOR_DATA_HEIGHT, 0);
     dma_display->setTextSize(1);     // size 1 == 8 pixels high
     dma_display->setTextWrap(false); // Don't wrap at end of line - will do ourselves
@@ -101,8 +139,9 @@ void displaySensorData() {
     // Draw the degree symbol manually
     dma_display->fillRect(SENSOR_DATA_X + 25, SENSOR_DATA_Y, 2, 2, SENSOR_DATA_COLOR);
 
-    newSensorData = false;
+    newMqttSensorData = false;
   }
+#endif
 }
 
 void displayLightData(float luxValue) {
@@ -120,7 +159,7 @@ void displayLightData(float luxValue) {
 void displayWeatherData(const struct city_info &info) {
   Serial.printf("displayWeatherData: temp=%2.1f, humi=%d\n",
 		info.forecasts[0].temp, info.forecasts[0].humidity);
-
+//fixme ... what to fix?
   dma_display->fillRect(SENSOR_DATA_X, SENSOR_DATA_Y,
 			SENSOR_DATA_WIDTH, SENSOR_DATA_HEIGHT, 0);
   dma_display->setTextSize(1);     // size 1 == 8 pixels high
@@ -128,10 +167,15 @@ void displayWeatherData(const struct city_info &info) {
   dma_display->setTextColor(SENSOR_DATA_COLOR);
   //dma_display->setFont(&FreeSerifBold12pt7b);
 
-  dma_display->setCursor(SENSOR_DATA_X, SENSOR_DATA_Y);
+  dma_display->setCursor(SENSOR_1_DATA_X, SENSOR_1_DATA_Y);
   dma_display->printf("%2.1f", info.forecasts[0].temp);
-  dma_display->setCursor(SENSOR_DATA_X, SENSOR_DATA_Y + 8);
+
+  dma_display->setCursor(SENSOR_2_DATA_X, SENSOR_2_DATA_Y);
   dma_display->printf("%3d%%", info.forecasts[0].humidity);
+
+  dma_display->setCursor(SENSOR_3_DATA_X, SENSOR_3_DATA_Y);
+  dma_display->printf("%4d%", info.forecasts[0].grnd_level);
+
   // Draw the degree symbol manually
   dma_display->fillRect(SENSOR_DATA_X + 25, SENSOR_DATA_Y, 2, 2, SENSOR_DATA_COLOR);
 

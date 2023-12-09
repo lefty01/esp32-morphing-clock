@@ -73,7 +73,11 @@ void setup(){
   logStatusMessage("WiFi connected!");
 
   logStatusMessage("NTP time...");
-  configTime(TIMEZONE_DELTA_SEC, TIMEZONE_DST_SEC, NTP_SERVER);
+
+  configTime(0, 0, MY_NTP_SERVER); // 0, 0 because we will use TZ in the next line
+  setenv("TZ", MY_TZ, 1);          // Set environment variable with your time zone
+  tzset();
+
   lastNTPUpdate = millis();
   logStatusMessage("NTP done!");
 
@@ -96,6 +100,10 @@ void setup(){
   configureLightSensor();
   delay(500);
 
+  logStatusMessage("Init Temp sensor");
+  configureTempSensor();
+  delay(500);
+
   logStatusMessage("Setting up watchdog...");
   esp_task_wdt_init(WDT_TIMEOUT, true);
   esp_task_wdt_add(NULL);
@@ -106,8 +114,8 @@ void setup(){
 #ifndef WEATHER_API_PROVIDER
   #error "***** ATTENTION NO WEATHER_API_PROVIDER DEFINED ******"
 #elif WEATHER_API_PROVIDER == OPENWEATHERMAP
-  getOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, &my_weather);
-  displayWeatherData(my_weather);
+  getOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, &myWeather);
+  displayWeatherData(myWeather);
 #elif WEATHER_API_PROVIDER == ACCUWEATHER
   getAccuWeatherData();
 #else
@@ -118,16 +126,16 @@ void setup(){
 
   // DEBUG ...
   for (int i = 0; i < 5; ++i) {
-    Serial.println(my_weather.forecasts[i].time);
-    Serial.println(my_weather.forecasts[i].condition);
-    Serial.println(my_weather.forecasts[i].temp);
-    Serial.println(my_weather.forecasts[i].pressure);
-    Serial.println(my_weather.forecasts[i].humidity);
-    Serial.println(my_weather.forecasts[i].wind);
+    Serial.println(myWeather.forecasts[i].time);
+    Serial.println(myWeather.forecasts[i].condition);
+    Serial.println(myWeather.forecasts[i].temp);
+    Serial.println(myWeather.forecasts[i].pressure);
+    Serial.println(myWeather.forecasts[i].humidity);
+    Serial.println(myWeather.forecasts[i].wind);
   }
-  Serial.println(my_weather.timezone);
-  Serial.println(my_weather.sunrise);
-  Serial.println(my_weather.sunset);
+  Serial.println(myWeather.timezone);
+  Serial.println(myWeather.sunrise);
+  Serial.println(myWeather.sunset);
 
   //draw5DayForecast(forecasts, 5);
   drawTestBitmap();
@@ -152,8 +160,15 @@ void loop() {
 
   // Periodically refresh NTP time
   if ((millis() - lastNTPUpdate) > (1000 * NTP_REFRESH_INTERVAL_SEC)) {
-    logStatusMessage("NTP Refresh");
-    configTime(TIMEZONE_DELTA_SEC, TIMEZONE_DST_SEC, NTP_SERVER);
+    logStatusMessage("No NTP Refresh");
+    //configTime(0, 0, MY_NTP_SERVER); // 0, 0 because we will use TZ in the next line
+    //tzset();
+
+    int hh = timeinfo.tm_hour;
+    int mm = timeinfo.tm_min;
+    int ss = timeinfo.tm_sec;
+    Serial.printf("%d:%d:%d\n", hh, mm, ss);
+
     lastNTPUpdate = millis();
   }
 
@@ -166,12 +181,12 @@ void loop() {
 #ifndef WEATHER_API_PROVIDER
   #error "***** ATTENTION NO WEATHER_API_PROVIDER DEFINED ******"
 #elif WEATHER_API_PROVIDER == OPENWEATHERMAP
-    getOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, &my_weather);
+    getOpenWeatherData(WEATHER_API_CITY_ID, WEATHER_API_UNITS, WEATHER_API_TOKEN, &myWeather);
     clearForecast();
     clearSensorData();
 
-    draw5DayForecastIcons(my_weather.forecasts, 5);
-    displayWeatherData(my_weather);
+    draw5DayForecastIcons(myWeather.forecasts, 5);
+    displayWeatherData(myWeather);
 #elif WEATHER_API_PROVIDER == ACCUWEATHER
     getAccuWeatherData();
     displayWeatherData();
@@ -191,30 +206,41 @@ void loop() {
       clearStatusMessage();
       //drawTestBitmap();
       clearForecast();
-      draw5DayForecastIcons(my_weather.forecasts, 5);
+      draw5DayForecastIcons(myWeather.forecasts, 5);
     }
   }
 
-  // Do we have new sensor data?
-  if (newSensorData) {
+  // Do we have new sensor data? .. actually right now I think I do not want to update on every new data coming in
+  // since this might be to fast? ... or what if we want to display a value that is updated only once a day?
+  // oh but what if we want to display async events ... maybe those log to the message box??
+  if ((millis() - lastMqttSensorShow) > (1000 * MQTT_SENSOR_DISPLAY_INTERVALL_SEC)) {
     //logStatusMessage("Sensor data in");
-    //displaySensorData(); FIXME position
-    //displayTodaysWeather();
+    displaySensorData();
+    lastMqttSensorShow = millis();
   }
 
-  // Is the sensor data too old?
-  if ((millis() - lastSensorRead) > (1000 * SENSOR_DEAD_INTERVAL_SEC)) { // TODO: via ticker!?
-    sensorDead = true;
-    //displaySensorData();FIXME position
+
+  for (size_t i = 0; i < mySensors.size(); ++i) {
+    // Is the sensor data too old (still alive)?
+    if ((millis() - mySensors[i].lastRead) > (1000 * SENSOR_DEAD_INTERVAL_SEC)) {
+      mySensors[i].isDead = true;
+    }
+
+    // new data check ... (if sensor is not updating periodically?)
+    if (mySensors[i].newData) {
+      // display ...
+      mySensors[i].newData = false;
+    }
   }
 
 
   heartBeat = !heartBeat;
   //drawHeartBeat(); // TODO: config option heartbeat
 
-  if ((millis() - lastLightRead) > (1000 * LIGHT_READ_INTERVAL_SEC)) {
-    lightUpdate();
-    lastLightRead = millis();
+  if ((millis() - lastI2cSensorRead) > (1000 * I2C_READ_INTERVAL_SEC)) {
+    //lightUpdate();
+    i2cSensorUpdate();
+    lastI2cSensorRead = millis();
   }
 
 
@@ -236,6 +262,16 @@ void displayUpdater() {
   }
 }
 
+void i2cSensorUpdate() {
+  float lightData    = getLightData();
+  float tempData     = getTempData();
+  float pressureData = getPressureData();
+
+  Serial.print("temp:     "); Serial.println(tempData);
+  Serial.print("pressure: "); Serial.println(pressureData);
+  Serial.print("light:    "); Serial.println(lightData);
+}
+
 void lightUpdate() {
   float lightData = getLightData();
 
@@ -243,6 +279,8 @@ void lightUpdate() {
     displayLightData(lightData);
   }
 }
+
+
 
 //TODO: http://www.rinkydinkelectronics.com/t_imageconverter565.php
 

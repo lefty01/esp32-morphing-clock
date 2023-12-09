@@ -41,6 +41,24 @@
 #define SENSOR_DATA_WIDTH ((PANEL_WIDTH / 2) - 2)
 #define SENSOR_DATA_HEIGHT 16
 
+// todo: change to SENSOR_1_DATA x/y, SENSOR_2_DATA x/y, and SENSOR_3_DATA x/y
+#define SENSOR_1_DATA_X 0
+#define SENSOR_1_DATA_Y 0
+#define SENSOR_1_DATA_WIDTH ((PANEL_WIDTH / 2) - 2)
+#define SENSOR_1_DATA_HEIGHT 8
+
+#define SENSOR_2_DATA_X 0
+#define SENSOR_2_DATA_Y 8
+#define SENSOR_2_DATA_WIDTH ((PANEL_WIDTH / 2) - 2)
+#define SENSOR_2_DATA_HEIGHT 8
+
+#define SENSOR_3_DATA_X 0
+#define SENSOR_3_DATA_Y 16
+#define SENSOR_3_DATA_WIDTH ((PANEL_WIDTH / 2) - 2)
+#define SENSOR_3_DATA_HEIGHT 8
+
+
+
 // ... FIXME: adjust to 64x64 if we want to use it (merged from bogdan)
 // Weather - today, and 5-day forecast
 #define WEATHER_TODAY_X 56
