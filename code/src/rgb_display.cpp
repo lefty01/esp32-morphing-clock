@@ -159,7 +159,7 @@ void displayLightData(float luxValue) {
 void displayWeatherData(const struct city_info &info) {
   Serial.printf("displayWeatherData: temp=%2.1f, humi=%d\n",
 		info.forecasts[0].temp, info.forecasts[0].humidity);
-fixme ... 
+//fixme ... what to fix?
   dma_display->fillRect(SENSOR_DATA_X, SENSOR_DATA_Y,
 			SENSOR_DATA_WIDTH, SENSOR_DATA_HEIGHT, 0);
   dma_display->setTextSize(1);     // size 1 == 8 pixels high
