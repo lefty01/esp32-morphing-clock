@@ -28,6 +28,7 @@ void displayClock() {
     int hh = timeinfo.tm_hour;
     int mm = timeinfo.tm_min;
     int ss = timeinfo.tm_sec;
+    Serial.printf("%d:%d:%d\n", hh, mm, ss);
     delay(500);
 
     if (clockStartingUp) { // If we didn't have a previous time. Just draw it without morphing.

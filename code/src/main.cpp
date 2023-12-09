@@ -73,7 +73,11 @@ void setup(){
   logStatusMessage("WiFi connected!");
 
   logStatusMessage("NTP time...");
-  configTime(TIMEZONE_DELTA_SEC, TIMEZONE_DST_SEC, NTP_SERVER);
+
+  configTime(0, 0, MY_NTP_SERVER); // 0, 0 because we will use TZ in the next line
+  setenv("TZ", MY_TZ, 1);          // Set environment variable with your time zone
+  tzset();
+
   lastNTPUpdate = millis();
   logStatusMessage("NTP done!");
 
@@ -156,8 +160,15 @@ void loop() {
 
   // Periodically refresh NTP time
   if ((millis() - lastNTPUpdate) > (1000 * NTP_REFRESH_INTERVAL_SEC)) {
-    logStatusMessage("NTP Refresh");
-    configTime(TIMEZONE_DELTA_SEC, TIMEZONE_DST_SEC, NTP_SERVER);
+    logStatusMessage("No NTP Refresh");
+    //configTime(0, 0, MY_NTP_SERVER); // 0, 0 because we will use TZ in the next line
+    //tzset();
+
+    int hh = timeinfo.tm_hour;
+    int mm = timeinfo.tm_min;
+    int ss = timeinfo.tm_sec;
+    Serial.printf("%d:%d:%d\n", hh, mm, ss);
+
     lastNTPUpdate = millis();
   }
 
@@ -227,7 +238,7 @@ void loop() {
   //drawHeartBeat(); // TODO: config option heartbeat
 
   if ((millis() - lastI2cSensorRead) > (1000 * I2C_READ_INTERVAL_SEC)) {
-    lightUpdate();
+    //lightUpdate();
     i2cSensorUpdate();
     lastI2cSensorRead = millis();
   }
@@ -252,13 +263,13 @@ void displayUpdater() {
 }
 
 void i2cSensorUpdate() {
-  float lightData = getLightData();
-  float tempdata = getTempData();
-  float pressuredata = getPressureData();
+  float lightData    = getLightData();
+  float tempData     = getTempData();
+  float pressureData = getPressureData();
 
-  Serial.print("temp:     "); Serial.println(tempdata);
-  Serial.print("pressure: "); Serial.println(pressuredata);
-
+  Serial.print("temp:     "); Serial.println(tempData);
+  Serial.print("pressure: "); Serial.println(pressureData);
+  Serial.print("light:    "); Serial.println(lightData);
 }
 
 void lightUpdate() {

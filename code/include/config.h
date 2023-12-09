@@ -34,6 +34,12 @@
 // DST delta to apply
 #define TIMEZONE_DST_SEC 0 //3600 FIXME does DST work?! doesnt look like
 
+// configure NTP
+// https://github.com/nayarsystems/posix_tz_db/blob/master/zones.csv
+#define MY_NTP_SERVER "de.pool.ntp.org"
+#define MY_TZ         "CET-1CEST,M3.5.0,M10.5.0/3"
+
+
 // How long are informational messages kept on screen
 #define LOG_MESSAGE_PERSISTENCE_MSEC 30000
 

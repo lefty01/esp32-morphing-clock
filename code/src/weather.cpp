@@ -283,23 +283,23 @@ int accuWeatherIconMapping(int icon) {
   if (icon <= 32) return 2;
   return 0;
 }
-
+// FIXME: pressure overwrite old value ... clear area.
 
 /* Start of code to get data from openweathermap - based on work by https://github.com/lefty01
 */
 int getOpenWeatherData(uint32_t loc_id, const char *units, const char *appid,
-			 struct city_info *info)
+                       struct city_info *info)
 {
   StaticJsonDocument<272> filter;
   filter["city"] = true;
 
   JsonObject filter_list_0 = filter["list"].createNestedObject();
   filter_list_0["dt"] = true;
+  filter_list_0["wind"]["speed"] = true;
 
   JsonObject filter_list_0_weather_0 = filter_list_0["weather"].createNestedObject();
   filter_list_0_weather_0["icon"] = true;
   filter_list_0_weather_0["id"] = true;
-  filter_list_0["wind"]["speed"] = true;
 
   JsonObject filter_list_0_main = filter_list_0.createNestedObject("main");
   filter_list_0_main["temp"] = true;
@@ -307,7 +307,6 @@ int getOpenWeatherData(uint32_t loc_id, const char *units, const char *appid,
   filter_list_0_main["temp_max"] = true;
   filter_list_0_main["pressure"] = true;   // Atmospheric pressure on the sea level, hPa
   filter_list_0_main["grnd_level"] = true; // Atmospheric pressure on the ground level, hPa
-
   filter_list_0_main["humidity"] = true;
 
   char url[128];
@@ -315,7 +314,7 @@ int getOpenWeatherData(uint32_t loc_id, const char *units, const char *appid,
   // sanity check units ...
   // strcmp(units, "standard") ... "metric", or "imperial"
   snprintf(url, 128, "http://api.openweathermap.org/data/2.5/forecast?id=%u&units=%s&appid=%s",
-	   loc_id, units, appid);
+           loc_id, units, appid);
 
   // Allocate the largest possible document (platform dependent)
   // DynamicJsonDocument doc(ESP.getMaxFreeBlockSize());
@@ -327,7 +326,7 @@ int getOpenWeatherData(uint32_t loc_id, const char *units, const char *appid,
   http.GET();
 
   DeserializationError error = deserializeJson(doc, http.getStream(),
-					       DeserializationOption::Filter(filter));
+                                               DeserializationOption::Filter(filter));
   if (error) {
     Serial.print(F("deserializeJson() failed: "));
     Serial.println(error.f_str());

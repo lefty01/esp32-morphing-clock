@@ -94,10 +94,10 @@ void displaySensorData() {
       Serial.printf("[%d] value int:     %d\n", i, mySensors[i].val_i);
       Serial.printf("[%d] value float:   %f\n", i, mySensors[i].val_f);
     }
-      //
-      // 
-      //mySensors[i].newData = false;
-      //}
+    //
+    //
+    //mySensors[i].newData = false;
+    //}
   }
   // for (int i; i = 0; ++i) {
   //   int val = s[i].val_i;
@@ -159,7 +159,7 @@ void displayLightData(float luxValue) {
 void displayWeatherData(const struct city_info &info) {
   Serial.printf("displayWeatherData: temp=%2.1f, humi=%d\n",
 		info.forecasts[0].temp, info.forecasts[0].humidity);
-
+fixme ... 
   dma_display->fillRect(SENSOR_DATA_X, SENSOR_DATA_Y,
 			SENSOR_DATA_WIDTH, SENSOR_DATA_HEIGHT, 0);
   dma_display->setTextSize(1);     // size 1 == 8 pixels high
@@ -167,10 +167,15 @@ void displayWeatherData(const struct city_info &info) {
   dma_display->setTextColor(SENSOR_DATA_COLOR);
   //dma_display->setFont(&FreeSerifBold12pt7b);
 
-  dma_display->setCursor(SENSOR_DATA_X, SENSOR_DATA_Y);
+  dma_display->setCursor(SENSOR_1_DATA_X, SENSOR_1_DATA_Y);
   dma_display->printf("%2.1f", info.forecasts[0].temp);
-  dma_display->setCursor(SENSOR_DATA_X, SENSOR_DATA_Y + 8);
+
+  dma_display->setCursor(SENSOR_2_DATA_X, SENSOR_2_DATA_Y);
   dma_display->printf("%3d%%", info.forecasts[0].humidity);
+
+  dma_display->setCursor(SENSOR_3_DATA_X, SENSOR_3_DATA_Y);
+  dma_display->printf("%4d%", info.forecasts[0].grnd_level);
+
   // Draw the degree symbol manually
   dma_display->fillRect(SENSOR_DATA_X + 25, SENSOR_DATA_Y, 2, 2, SENSOR_DATA_COLOR);
 
