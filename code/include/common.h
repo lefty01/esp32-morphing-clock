@@ -14,6 +14,7 @@
 extern const char* PROG_VERSION;
 
 #ifdef MQTT_USE_SSL
+#include <WiFiClientSecure.h>
 extern WiFiClientSecure wifiClient;
 #else
 extern WiFiClient wifiClient;

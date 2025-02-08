@@ -14,16 +14,16 @@ const uint16_t height = PANEL_HEIGHT-1;
 const uint16_t width = PANEL_WIDTH-1;
 
 byte digitBits[] = {
-  B11111100, // 0 ABCDEF--
-  B01100000, // 1 -BC-----
-  B11011010, // 2 AB-DE-G-
-  B11110010, // 3 ABCD--G-
-  B01100110, // 4 -BC--FG-
-  B10110110, // 5 A-CD-FG-
-  B10111110, // 6 A-CDEFG-
-  B11100000, // 7 ABC-----
-  B11111110, // 8 ABCDEFG-
-  B11110110, // 9 ABCD_FG-
+  0b11111100, // 0 ABCDEF--
+  0b01100000, // 1 -BC-----
+  0b11011010, // 2 AB-DE-G-
+  0b11110010, // 3 ABCD--G-
+  0b01100110, // 4 -BC--FG-
+  0b10110110, // 5 A-CD-FG-
+  0b10111110, // 6 A-CDEFG-
+  0b11100000, // 7 ABC-----
+  0b11111110, // 8 ABCDEFG-
+  0b11110110, // 9 ABCD_FG-
 };
 
 //byte sunBitmap[] {

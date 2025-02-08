@@ -44,6 +44,13 @@ unsigned long lastWeatherUpdate;
 //Just a blinking heart to show the main thread is still alive...
 bool blinkOn;
 
+//#define CONFIG_FREERTOS_NUMBER_OF_CORES 1
+esp_task_wdt_config_t twdt_config = {
+    .timeout_ms = WDT_TIMEOUT,
+    .idle_core_mask = (1 << CONFIG_FREERTOS_NUMBER_OF_CORES) - 1,    // Bitmask of all cores
+    .trigger_panic = true,
+};
+
 void setup(){
   display_init();
 
@@ -97,8 +104,12 @@ void setup(){
   delay(500);
 
   logStatusMessage("Setting up watchdog...");
-  esp_task_wdt_init(WDT_TIMEOUT, true);
-  esp_task_wdt_add(NULL);
+
+  esp_task_wdt_deinit(); //wdt is enabled by default, so we need to deinit it first
+  esp_task_wdt_init(&twdt_config); //enable panic so ESP32 restarts
+  esp_task_wdt_add(NULL); //add current thread to WDT watch
+  // deprecated: esp_task_wdt_init(WDT_TIMEOUT, true);
+  // deprecated: esp_task_wdt_add(NULL);
   logStatusMessage("Woof!");
 
   //logStatusMessage(WiFi.localIP().toString());

@@ -3,8 +3,10 @@
 
 void buzzer_init() {
     pinMode(BUZZER_PIN, OUTPUT);
-    ledcSetup(BUZZER_PWM_CHANNEL, 1000, BUZZER_PWM_RESOLUTION);
-    ledcAttachPin(BUZZER_PIN, BUZZER_PWM_CHANNEL);
+    //ledcSetup(BUZZER_PWM_CHANNEL, 1000, BUZZER_PWM_RESOLUTION);
+    //ledcAttachPin(BUZZER_PIN, BUZZER_PWM_CHANNEL);
+
+    ledcAttach(BUZZER_PIN, 1000, BUZZER_PWM_RESOLUTION);
 }
 
 void buzzer_tone(double freq, uint32_t durationMs) {

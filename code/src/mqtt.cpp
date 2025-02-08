@@ -77,8 +77,8 @@ void reconnect() {
     if ( status != WL_CONNECTED) {
       WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
       while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
+	delay(500);
+	Serial.print(".");
       }
       Serial.println("Connected to AP");
       logStatusMessage("MQTT lost");
